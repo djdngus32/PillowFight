@@ -1,18 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainSceneUIHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button quitButton;
+
+    private void Awake()
     {
-        
+        startButton?.onClick.AddListener(OnClickStartButton);
+        quitButton?.onClick.AddListener(OnClickQuitButton);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnClickStartButton()
     {
-        
+
+    }
+
+    private void OnClickQuitButton()
+    {
+
     }
 }
