@@ -36,7 +36,7 @@ public class NetworkManager : MonoBehaviour
 
     private IEnumerator CoConnectFusionServer()
     {
-        runner = Instantiate(networkRunnerPrefab);
+        runner = Instantiate(networkRunnerPrefab, transform);
         runner.name = networkRunnerPrefab.name;
 
         StartGameArgs startGameArgs = new StartGameArgs();
