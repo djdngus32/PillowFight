@@ -16,7 +16,7 @@ public class MainSceneUIHandler : MonoBehaviour
 
     private void OnClickStartButton()
     {
-
+        PopupManager.Instance?.OpenPopup(EPopupType.LOGIN);
     }
 
     private void OnClickQuitButton()

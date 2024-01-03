@@ -12,6 +12,7 @@ public class PopupContainer : MonoBehaviour
     private void Start()
     {
         PopupManager.Instance?.SetPopupContainer(this);
+        CloseAllPopup();
     }
 
     public PopupUI GetPopup(EPopupType type)
@@ -28,5 +29,16 @@ public class PopupContainer : MonoBehaviour
         }
 
         return result;
+    }
+
+    private void CloseAllPopup()
+    {
+        if(popup.Count > 0)
+        {
+            foreach(var popupUI in popup)
+            {
+                popupUI.gameObject.SetActive(false);
+            }
+        }
     }
 }
