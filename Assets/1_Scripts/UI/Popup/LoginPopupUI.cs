@@ -23,6 +23,12 @@ public class LoginPopupUI : PopupUI
             return;
         }
 
+        PlayerData data = new PlayerData();
+        data.Nickname = nickNameInputField.text;
+
+        PlayerManager.Instance?.SetPlayerData(data);
         gameObject.SetActive(false);
+
+        NetworkManager.Instance.JoinOrCreateSession();
     }
 }
