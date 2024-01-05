@@ -1223,6 +1223,8 @@ GameObject:
   - component: {fileID: 1114260476483171701}
   - component: {fileID: 5615815007780928290}
   - component: {fileID: 4738558639147882546}
+  - component: {fileID: 1053871470121118801}
+  - component: {fileID: 5454136987082569223}
   - component: {fileID: 5671541529887826842}
   m_Layer: 8
   m_Name: RobotKyle
@@ -1296,6 +1298,35 @@ CharacterController:
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.93, z: 0}
+--- !u!114 &1053871470121118801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3862277631971027947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3072855e4d87ba941b42944a5e302d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5454136987082569223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3862277631971027947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e054367665662ec41a1ed334a0482764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterController: {fileID: 4738558639147882546}
+  walkSpeed: 0.15
+  _MoveDirection: {x: 0, y: 0, z: 0}
+  _IsJump:
+    _value: 0
 --- !u!114 &5671541529887826842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1312,7 +1343,9 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 1053871470121118801}
+  - {fileID: 5454136987082569223}
 --- !u!1 &4072265639379859564
 GameObject:
   m_ObjectHideFlags: 0
