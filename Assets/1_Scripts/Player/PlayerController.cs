@@ -6,19 +6,28 @@ using UnityEngine.EventSystems;
 
 public class PlayerController : NetworkBehaviour
 {
+    [SerializeField] private Transform cameraFollowTarget;
     [SerializeField] private CharacterController characterController;
 
     public float walkSpeed = 5f;
+    public float cameraDistance = 1f;
+
+    private SceneCameraHandler sceneCamera;
 
     #region Networked º¯¼ö
 
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
+    [Networked, HideInInspector] public Vector2 LookRotationDelta { get; set; }
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
 
     #endregion
 
     public override void Spawned()
     {
+        if(Object.HasInputAuthority == true)
+        {
+            sceneCamera = FindObjectOfType<SceneCameraHandler>();
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -27,7 +36,15 @@ public class PlayerController : NetworkBehaviour
             return;
 
         UpdateInput();
+        UpdateRotation();
         UpdateMovement();
+    }
+
+    public override void Render()
+    {
+        Vector3 lookDirection = cameraFollowTarget.transform.forward;
+        sceneCamera.Camera.transform.localPosition = cameraFollowTarget.position - lookDirection * cameraDistance;
+        sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
     }
 
     private void UpdateInput()
@@ -57,7 +74,18 @@ public class PlayerController : NetworkBehaviour
 
             MoveDirection = inputMoveDirection.normalized;
 
+            LookRotationDelta = inputData.RotationDelta;
+
             IsJump = inputData.IsPressed(PlayerInputData.BUTTON_JUMP);
+        }
+    }
+
+    private void UpdateRotation()
+    {
+        if (LookRotationDelta.magnitude > 0)
+        {
+            cameraFollowTarget.Rotate(Vector3.up, LookRotationDelta.y);
+            cameraFollowTarget.Rotate(Vector3.right, LookRotationDelta.x);
         }
     }
 
