@@ -12,6 +12,9 @@ public class PlayerController : NetworkBehaviour
     public float walkSpeed = 5f;
     public float cameraDistance = 1f;
 
+    private float lookPitch;
+    private float lookYaw;
+
     private SceneCameraHandler sceneCamera;
 
     #region Networked º¯¼ö
@@ -76,17 +79,25 @@ public class PlayerController : NetworkBehaviour
 
             LookRotationDelta = inputData.RotationDelta;
 
+            if (LookRotationDelta.x != 0)
+            {
+                lookPitch = lookPitch + LookRotationDelta.x;
+            }
+
+            if (LookRotationDelta.y != 0)
+            {
+                lookYaw = lookYaw + LookRotationDelta.y;
+            }
+
             IsJump = inputData.IsPressed(PlayerInputData.BUTTON_JUMP);
         }
     }
 
     private void UpdateRotation()
     {
-        if (LookRotationDelta.magnitude > 0)
-        {
-            cameraFollowTarget.Rotate(Vector3.up, LookRotationDelta.y);
-            cameraFollowTarget.Rotate(Vector3.right, LookRotationDelta.x);
-        }
+        transform.rotation = Quaternion.Euler(0,lookYaw,0);
+        cameraFollowTarget.localRotation = Quaternion.Euler(lookPitch,0,0);
+
     }
 
     private void UpdateMovement()
