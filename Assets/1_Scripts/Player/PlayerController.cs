@@ -11,9 +11,21 @@ public class PlayerController : NetworkBehaviour
 
     public float walkSpeed = 5f;
     public float cameraDistance = 1f;
+    [Header("Animation")]
+    public float locomotionAnimChangeSpeed = 10f;
 
     private float lookPitch;
     private float lookYaw;
+    private float animationWalkSpeed = 2f;
+    private float animationRunSpeed = 6f;
+    float animationBlend;
+    private Animator animator;
+
+    // animation IDs
+    private int animIDSpeed;
+    private int animIDGrounded;
+    private int animIDJump;
+    private int animIDFreeFall;
 
     private SceneCameraHandler sceneCamera;
 
@@ -24,6 +36,15 @@ public class PlayerController : NetworkBehaviour
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
 
     #endregion
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+        animIDSpeed = Animator.StringToHash("Speed");
+        animIDGrounded = Animator.StringToHash("Grounded");
+        animIDJump = Animator.StringToHash("Jump");
+        animIDFreeFall = Animator.StringToHash("FreeFall");
+    }
 
     public override void Spawned()
     {
@@ -45,6 +66,16 @@ public class PlayerController : NetworkBehaviour
 
     public override void Render()
     {
+        //애니메이션 재생
+        bool isPressedSprintButton = false;
+        float targetSpeed = isPressedSprintButton ? animationRunSpeed : animationWalkSpeed;
+        targetSpeed *= MoveDirection.magnitude;
+
+        animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Runner.DeltaTime * locomotionAnimChangeSpeed);
+        if (animationBlend < 0.01f) animationBlend = 0f;
+
+        animator.SetFloat(animIDSpeed, animationBlend);
+
         Vector3 lookDirection = cameraFollowTarget.transform.forward;
         sceneCamera.Camera.transform.localPosition = cameraFollowTarget.position - lookDirection * cameraDistance;
         sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
@@ -97,11 +128,15 @@ public class PlayerController : NetworkBehaviour
     {
         transform.rotation = Quaternion.Euler(0,lookYaw,0);
         cameraFollowTarget.localRotation = Quaternion.Euler(lookPitch,0,0);
-
     }
 
     private void UpdateMovement()
     {
         characterController.Move(MoveDirection * walkSpeed);
+    }
+
+    private void OnFootstep(AnimationEvent animationEvent)
+    {
+
     }
 }
