@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using UnityEngine.EventSystems;
+using System.Runtime.CompilerServices;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -30,21 +31,13 @@ public class PlayerController : NetworkBehaviour
     private SceneCameraHandler sceneCamera;
 
     #region Networked 변수
-
+    [Networked, HideInInspector] public Vector3 OriginPosition { get; set; }
+    [Networked, HideInInspector] public Quaternion OriginRotation { get; set; }
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
     [Networked, HideInInspector] public Vector2 LookRotationDelta { get; set; }
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
 
     #endregion
-
-    private void Start()
-    {
-        animator = GetComponent<Animator>();
-        animIDSpeed = Animator.StringToHash("Speed");
-        animIDGrounded = Animator.StringToHash("Grounded");
-        animIDJump = Animator.StringToHash("Jump");
-        animIDFreeFall = Animator.StringToHash("FreeFall");
-    }
 
     public override void Spawned()
     {
@@ -52,20 +45,28 @@ public class PlayerController : NetworkBehaviour
         {
             sceneCamera = FindObjectOfType<SceneCameraHandler>();
         }
+
+        InitializeAnimator();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (Object.HasInputAuthority == false)
-            return;
+        if(Object.HasInputAuthority ==  false)
+            Debug.Log($"Player Id : {Object.InputAuthority.PlayerId}");
 
         UpdateInput();
         UpdateRotation();
         UpdateMovement();
+
+        OriginPosition = transform.position;
+        OriginRotation = transform.rotation;
     }
 
     public override void Render()
     {
+        if (Object.HasInputAuthority == false)
+            return;
+
         //애니메이션 재생
         bool isPressedSprintButton = false;
         float targetSpeed = isPressedSprintButton ? animationRunSpeed : animationWalkSpeed;
@@ -79,6 +80,15 @@ public class PlayerController : NetworkBehaviour
         Vector3 lookDirection = cameraFollowTarget.transform.forward;
         sceneCamera.Camera.transform.localPosition = cameraFollowTarget.position - lookDirection * cameraDistance;
         sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
+    }
+
+    private void InitializeAnimator()
+    {
+        animator = GetComponent<Animator>();
+        animIDSpeed = Animator.StringToHash("Speed");
+        animIDGrounded = Animator.StringToHash("Grounded");
+        animIDJump = Animator.StringToHash("Jump");
+        animIDFreeFall = Animator.StringToHash("FreeFall");
     }
 
     private void UpdateInput()

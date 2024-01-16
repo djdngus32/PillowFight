@@ -12,6 +12,11 @@ public class PlayerInput : NetworkBehaviour, INetworkRunnerCallbacks
         Runner.AddCallbacks(this);
     }
 
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        Runner.RemoveCallbacks(this);
+    }
+
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         if (Object.HasInputAuthority == false)
