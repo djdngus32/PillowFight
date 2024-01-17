@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using UnityEngine.EventSystems;
-using System.Runtime.CompilerServices;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -21,6 +19,8 @@ public class PlayerController : NetworkBehaviour
     private float animationRunSpeed = 6f;
     float animationBlend;
     private Animator animator;
+
+    private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
 
     // animation IDs
     private int animIDSpeed;
@@ -64,11 +64,7 @@ public class PlayerController : NetworkBehaviour
 
     public override void Render()
     {
-        if(IsProxy)
-        {
-            transform.position = OriginPosition;
-            transform.rotation = OriginRotation;
-        }
+        SynchronizeTransform(OriginPosition, OriginRotation);
 
         if (Object.HasInputAuthority == false)
             return;
@@ -149,6 +145,36 @@ public class PlayerController : NetworkBehaviour
     private void UpdateMovement()
     {
         characterController.Move(MoveDirection * walkSpeed);
+    }
+
+    Vector3 lastAntiJitterPosition;
+
+    private void SynchronizeTransform(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        Vector3 vector = targetPosition;
+        //_rigidbody.position = vector;
+
+        Vector3 vector2 = vector - lastAntiJitterPosition;
+        if (vector2.sqrMagnitude < 1f)
+        {
+            vector = lastAntiJitterPosition;
+            float num = Mathf.Abs(vector2.y);
+            if (num > 1E-06f)
+            {
+                vector.y += vector2.y * Mathf.Clamp01((num - antiJitterDistance.y) / num);
+            }
+
+            vector2.y = 0;
+            Vector3 vector3 = vector2;
+            float num2 = Vector3.Magnitude(vector3);
+            if (num2 > 1E-06f)
+            {
+                vector += vector3 * Mathf.Clamp01((num2 - antiJitterDistance.x) / num2);
+            }
+        }
+
+        lastAntiJitterPosition = vector;
+        transform.SetPositionAndRotation(vector, targetRotation);
     }
 
     private void OnFootstep(AnimationEvent animationEvent)
