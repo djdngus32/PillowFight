@@ -64,6 +64,12 @@ public class PlayerController : NetworkBehaviour
 
     public override void Render()
     {
+        if(IsProxy)
+        {
+            transform.position = OriginPosition;
+            transform.rotation = OriginRotation;
+        }
+
         if (Object.HasInputAuthority == false)
             return;
 
