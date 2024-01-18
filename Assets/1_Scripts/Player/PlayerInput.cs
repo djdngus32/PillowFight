@@ -56,6 +56,11 @@ public class PlayerInput : NetworkBehaviour, INetworkRunnerCallbacks
             input.buttons |= PlayerInputData.BUTTON_JUMP;
         }
 
+        if(Input.GetKey(KeyCode.Mouse0))
+        {
+            input.buttons |= PlayerInputData.BUTTON_ATTACK;
+        }
+
         Vector2 inputRotateDelta = new Vector2(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"));
 
         if(inputRotateDelta.magnitude != 0)

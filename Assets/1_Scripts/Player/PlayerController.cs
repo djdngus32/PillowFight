@@ -66,9 +66,6 @@ public class PlayerController : NetworkBehaviour
     {
         SynchronizeTransform(OriginPosition, OriginRotation);
 
-        if (Object.HasInputAuthority == false)
-            return;
-
         //애니메이션 재생
         bool isPressedSprintButton = false;
         float targetSpeed = isPressedSprintButton ? animationRunSpeed : animationWalkSpeed;
@@ -78,6 +75,9 @@ public class PlayerController : NetworkBehaviour
         if (animationBlend < 0.01f) animationBlend = 0f;
 
         animator.SetFloat(animIDSpeed, animationBlend);
+
+        if (Object.HasInputAuthority == false)
+            return;
 
         Vector3 lookDirection = cameraFollowTarget.transform.forward;
         sceneCamera.Camera.transform.localPosition = cameraFollowTarget.position - lookDirection * cameraDistance;
