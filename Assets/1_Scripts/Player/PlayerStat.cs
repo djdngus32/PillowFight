@@ -22,6 +22,8 @@ public class PlayerStat : NetworkBehaviour
             CurrentHP = maxHP;
 
             invincibilityTimer = TickTimer.CreateFromSeconds(Runner, invincibilityDurationAfterSpawn);
+
+            PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
         }
     }
 
@@ -42,6 +44,8 @@ public class PlayerStat : NetworkBehaviour
             //磷澜 贸府 せせせせ
             Debug.Log("Dead!");
         }
+
+        
 
         return true;            
     }
@@ -67,5 +71,7 @@ public class PlayerStat : NetworkBehaviour
             //磷澜 贸府 せせせせ
             Debug.Log("Dead!");
         }
+
+        PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
     }
 }
