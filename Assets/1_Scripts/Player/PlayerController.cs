@@ -10,7 +10,9 @@ public class PlayerController : NetworkBehaviour
 
     [Networked] public Weapon CurrentWeapon { get; set; }
 
+    [Header("Movement")]
     public float walkSpeed = 5f;
+    public float jumpForce = 5f;
     public float cameraDistance = 1f;
     [Header("Animation")]
     public float locomotionAnimChangeSpeed = 10f;
@@ -19,6 +21,8 @@ public class PlayerController : NetworkBehaviour
     private float lookYaw;
     private float animationWalkSpeed = 2f;
     private float animationRunSpeed = 6f;
+    private Vector3 velocity;
+    private float gravity = -9.81f;
     float animationBlend;
     private Animator animator;
 
@@ -161,7 +165,19 @@ public class PlayerController : NetworkBehaviour
 
     private void UpdateMovement()
     {
-        characterController.Move(MoveDirection * walkSpeed);
+        if(characterController.isGrounded)
+        {
+            velocity = new Vector3(0, -1f, 0);
+        }
+
+        velocity.y += gravity * Runner.DeltaTime;
+        if(IsJump && characterController.isGrounded)
+        {
+            //Jump
+            velocity.y += jumpForce;
+        }
+
+        characterController.Move((MoveDirection * walkSpeed) + velocity * Runner.DeltaTime);
     }
 
     Vector3 lastAntiJitterPosition;
