@@ -8,6 +8,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Transform cameraFollowTarget;
     [SerializeField] private CharacterController characterController;
 
+    [Networked] public Weapon CurrentWeapon { get; set; }
+
     public float walkSpeed = 5f;
     public float cameraDistance = 1f;
     [Header("Animation")]
@@ -47,6 +49,8 @@ public class PlayerController : NetworkBehaviour
         }
 
         InitializeAnimator();
+
+        CurrentWeapon = transform.GetComponentInChildren<Weapon>();
     }
 
     public override void FixedUpdateNetwork()
@@ -84,6 +88,14 @@ public class PlayerController : NetworkBehaviour
         sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
     }
 
+    public void Fire()
+    {
+        if (CurrentWeapon == null)
+            return;
+
+        CurrentWeapon.Fire(CurrentWeapon.gameObject.transform.position, transform.forward);
+    }
+
     private void InitializeAnimator()
     {
         animator = GetComponent<Animator>();
@@ -117,6 +129,11 @@ public class PlayerController : NetworkBehaviour
 
             if (inputData.IsPressed(PlayerInputData.BUTTON_RIGHT))
                 inputMoveDirection += right;
+
+            if(inputData.IsPressed(PlayerInputData.BUTTON_ATTACK))
+            {
+                Fire();
+            }
 
             MoveDirection = inputMoveDirection.normalized;
 

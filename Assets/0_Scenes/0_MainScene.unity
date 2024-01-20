@@ -731,7 +731,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: 9193452112588344502, guid: 883a447028484a3418a5e4b9c0323b2b, type: 3}
-  playerPrefab: {fileID: 3862277631971027947, guid: 7ae956b4f54394e80818898d8f4d30c6, type: 3}
+  playerPrefab: {fileID: 8200760830567974056, guid: 7ae956b4f54394e80818898d8f4d30c6, type: 3}
 --- !u!1001 &2563946421548604599
 PrefabInstance:
   m_ObjectHideFlags: 0
