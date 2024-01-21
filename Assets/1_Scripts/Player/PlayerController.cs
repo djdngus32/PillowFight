@@ -83,6 +83,8 @@ public class PlayerController : NetworkBehaviour
         if (animationBlend < 0.01f) animationBlend = 0f;
 
         animator.SetFloat(animIDSpeed, animationBlend);
+        animator.SetBool(animIDJump, IsJump);
+        animator.SetBool(animIDGrounded, characterController.isGrounded);
 
         if (Object.HasInputAuthority == false)
             return;
@@ -212,6 +214,11 @@ public class PlayerController : NetworkBehaviour
 
     private void OnFootstep(AnimationEvent animationEvent)
     {
+        //사운드 재생
+    }
 
+    private void OnLand(AnimationEvent animationEvent)
+    {
+        //사운드 재생
     }
 }
