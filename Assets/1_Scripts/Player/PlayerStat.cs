@@ -27,29 +27,6 @@ public class PlayerStat : NetworkBehaviour
         }
     }
 
-    public bool ApplyDamage(PlayerRef dealer, float damage, Vector3 position, Vector3 direction)
-    {
-        if (CurrentHP <= 0f)
-            return false;
-
-        if (IsInvincibility)
-            return false;
-
-        CurrentHP -= damage;
-
-        if(CurrentHP<=0f)
-        {
-            CurrentHP = 0f;
-
-            //磷澜 贸府 せせせせ
-            Debug.Log("Dead!");
-        }
-
-        
-
-        return true;            
-    }
-
     [Rpc(RpcSources.All , RpcTargets.StateAuthority)]
     public void RPC_ApplyDamage(PlayerRef dealer, float damage)
     {
@@ -70,6 +47,7 @@ public class PlayerStat : NetworkBehaviour
 
             //磷澜 贸府 せせせせ
             Debug.Log("Dead!");
+            
         }
 
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
