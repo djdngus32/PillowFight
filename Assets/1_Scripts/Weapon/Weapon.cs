@@ -27,7 +27,7 @@ public class Weapon : NetworkBehaviour
             return;
 
         Attack(firePosition, fireDirection);
-        fireCooldown = TickTimer.CreateFromSeconds(Runner, 0.1f);
+        fireCooldown = TickTimer.CreateFromSeconds(Runner, 0.5f);
     }
 
     private void Attack(Vector3 firePosition, Vector3 fireDirection)

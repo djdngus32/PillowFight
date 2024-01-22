@@ -75,9 +75,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        //yield return new WaitUntil(() => runner.IsConnectedToServer == true);
+        yield return new WaitForSeconds(1);
 
-        //PlayerManager.Instance.SpawnPlayer(runner);
+        //yield return new WaitUntil(() => runner.IsConnectedToServer == true);
+        PlayerManager.Instance.SetRunner(runner);
+        PlayerManager.Instance.SpawnPlayer(runner);
         yield return null;
     }
 

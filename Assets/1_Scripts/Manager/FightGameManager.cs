@@ -27,7 +27,7 @@ public class FightGameManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        UpdatePlayer();
+        //UpdatePlayer();
     }
 
     private void UpdatePlayer()

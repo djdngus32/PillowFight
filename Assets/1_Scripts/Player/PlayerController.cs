@@ -36,6 +36,8 @@ public class PlayerController : NetworkBehaviour
 
     private SceneCameraHandler sceneCamera;
 
+    private PlayerStat stat;
+
     #region Networked º¯¼ö
     [Networked, HideInInspector] public Vector3 OriginPosition { get; set; }
     [Networked, HideInInspector] public Quaternion OriginRotation { get; set; }
@@ -50,11 +52,13 @@ public class PlayerController : NetworkBehaviour
         if(Object.HasInputAuthority == true)
         {
             sceneCamera = FindObjectOfType<SceneCameraHandler>();
+            PlayerManager.Instance.Controller = this;
         }
 
         InitializeAnimator();
 
         CurrentWeapon = transform.GetComponentInChildren<Weapon>();
+        stat = transform.GetComponent<PlayerStat>();
     }
 
     public override void FixedUpdateNetwork()
@@ -63,6 +67,10 @@ public class PlayerController : NetworkBehaviour
             Debug.Log($"Player Id : {Object.InputAuthority.PlayerId}");
 
         UpdateInput();
+
+        if (stat != null && stat.IsAlive == false)
+            return;
+
         UpdateRotation();
         UpdateMovement();
 
