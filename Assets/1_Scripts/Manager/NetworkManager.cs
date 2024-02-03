@@ -15,7 +15,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     private NetworkRunner runner;
 
-    private readonly string SCENE_NAME_FIELD = "1_FieldScene";
+    private readonly string SCENE_NAME_FIELD = "1_FillowFightScene";
 
     private void Awake()
     {
