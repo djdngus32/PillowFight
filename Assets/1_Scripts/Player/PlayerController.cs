@@ -7,6 +7,7 @@ public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private Transform cameraFollowTarget;
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private Transform weaponEquipTransform;
 
     [Networked] public Weapon CurrentWeapon { get; set; }
 
