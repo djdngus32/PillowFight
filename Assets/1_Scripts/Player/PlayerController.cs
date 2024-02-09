@@ -107,6 +107,12 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
+        if(stat.DamagedCount > stat.localDamagedCount)
+        {
+            animator.SetTrigger(animIDTakeDamage);
+            stat.localDamagedCount++;
+        }
+
         if (Object.HasInputAuthority == false)
             return;
 

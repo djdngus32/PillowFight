@@ -8,11 +8,13 @@ public class PlayerStat : NetworkBehaviour
     [SerializeField] private float maxHP = 100f;
     [SerializeField] private float invincibilityDurationAfterSpawn = 2f;
 
-    public bool IsAlive => CurrentHP > 0f;
+    public int localDamagedCount;
 
+    public bool IsAlive => CurrentHP > 0f;
     public bool IsInvincibility => invincibilityTimer.ExpiredOrNotRunning(Runner) == false;
 
-    [Networked] public float CurrentHP { get;private set; }
+    [Networked] public int DamagedCount { get; private set; }
+    [Networked] public float CurrentHP { get; private set; }
     [Networked] private TickTimer invincibilityTimer { get; set; }
 
     public override void Spawned()
@@ -25,6 +27,8 @@ public class PlayerStat : NetworkBehaviour
 
             PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
         }
+
+        localDamagedCount = DamagedCount;
     }
 
     [Rpc(RpcSources.All , RpcTargets.StateAuthority)]
@@ -48,6 +52,10 @@ public class PlayerStat : NetworkBehaviour
             //避擠 籀葬 六六六六
             Debug.Log("Dead!");
             StartCoroutine(PlayerManager.Instance.CoRespawnPlayer(5f));
+        }
+        else
+        {
+            DamagedCount++;
         }
 
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
