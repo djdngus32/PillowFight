@@ -34,6 +34,9 @@ public class PlayerController : NetworkBehaviour
     private int animIDGrounded;
     private int animIDJump;
     private int animIDFreeFall;
+    private int animIDDeath;
+    private int animIDAttack;
+    private int animIDTakeDamage;
 
     private SceneCameraHandler sceneCamera;
 
@@ -45,7 +48,6 @@ public class PlayerController : NetworkBehaviour
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
     [Networked, HideInInspector] public Vector2 LookRotationDelta { get; set; }
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
-
     #endregion
 
     public override void Spawned()
@@ -95,6 +97,15 @@ public class PlayerController : NetworkBehaviour
         animator.SetBool(animIDJump, IsJump);
         animator.SetBool(animIDGrounded, characterController.isGrounded);
 
+        if(CurrentWeapon != null)
+        {
+            if(CurrentWeapon.FireCount > CurrentWeapon.localFireCount)
+            {
+                animator.SetTrigger(animIDAttack);
+                CurrentWeapon.localFireCount++;
+            }
+        }
+
         if (Object.HasInputAuthority == false)
             return;
 
@@ -118,6 +129,9 @@ public class PlayerController : NetworkBehaviour
         animIDGrounded = Animator.StringToHash("Grounded");
         animIDJump = Animator.StringToHash("Jump");
         animIDFreeFall = Animator.StringToHash("FreeFall");
+        animIDDeath = Animator.StringToHash("Dead");
+        animIDAttack = Animator.StringToHash("Attack");
+        animIDTakeDamage = Animator.StringToHash("TakeDamage");
     }
 
     private void UpdateInput()

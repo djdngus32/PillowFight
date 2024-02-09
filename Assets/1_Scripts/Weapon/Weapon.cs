@@ -10,15 +10,19 @@ public class Weapon : NetworkBehaviour
     public LayerMask HitMask;
     public float MaxHitDistance = 100f;
 
+    public int localFireCount;
+
     private int fireTicks;
 
-    [Networked] private int fireCount { get; set; }
+    [Networked] public int FireCount { get; set; }
     [Networked] private TickTimer fireCooldown { get; set; }
 
     public override void Spawned()
     {
         float fireTime = 60f / FireRate; ;
         fireTicks = Mathf.CeilToInt(fireTime / Runner.DeltaTime);
+
+        localFireCount = FireCount;
     }
 
     public void Fire(Vector3 firePosition, Vector3 fireDirection)
@@ -27,6 +31,7 @@ public class Weapon : NetworkBehaviour
             return;
 
         Attack(firePosition, fireDirection);
+        FireCount++;
         fireCooldown = TickTimer.CreateFromSeconds(Runner, 0.5f);
     }
 
