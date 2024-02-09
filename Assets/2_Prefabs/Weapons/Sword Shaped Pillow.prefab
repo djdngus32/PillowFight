@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7788118314445010966}
+  - component: {fileID: 7586238290056468119}
+  - component: {fileID: 420798651232742442}
   m_Layer: 0
   m_Name: Sword Shaped Pillow
   m_TagString: Untagged
@@ -30,8 +32,46 @@ Transform:
   m_Children:
   - {fileID: 8150853115379589037}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7586238290056468119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6742414493424343733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 583b5577835aa71438bcc5735850177c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Damage: 10
+  FireRate: 100
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 0
+  MaxHitDistance: 100
+  localFireCount: 0
+  _FireCount: 0
+--- !u!114 &420798651232742442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6742414493424343733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1852617207
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 7586238290056468119}
 --- !u!1001 &8150853115379189037
 PrefabInstance:
   m_ObjectHideFlags: 0

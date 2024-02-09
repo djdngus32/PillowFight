@@ -14,7 +14,7 @@ public class Weapon : NetworkBehaviour
 
     private int fireTicks;
 
-    [Networked] public int FireCount { get; set; }
+    [Networked, HideInInspector] public int FireCount { get; set; }
     [Networked] private TickTimer fireCooldown { get; set; }
 
     public override void Spawned()
