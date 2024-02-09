@@ -96,6 +96,7 @@ public class PlayerController : NetworkBehaviour
         animator.SetFloat(animIDSpeed, animationBlend);
         animator.SetBool(animIDJump, IsJump);
         animator.SetBool(animIDGrounded, characterController.isGrounded);
+        animator.SetBool(animIDDeath, !stat.IsAlive);
 
         if(CurrentWeapon != null)
         {
