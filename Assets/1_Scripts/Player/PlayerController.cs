@@ -39,8 +39,6 @@ public class PlayerController : NetworkBehaviour
     private int animIDAttack;
     private int animIDTakeDamage;
 
-    private SceneCameraHandler sceneCamera;
-
     private PlayerStat stat;
 
     #region Networked º¯¼ö
@@ -55,7 +53,11 @@ public class PlayerController : NetworkBehaviour
     {
         if(Object.HasInputAuthority == true)
         {
-            sceneCamera = FindObjectOfType<SceneCameraHandler>();
+            FollowCameraController followCamera = FindAnyObjectByType<FollowCameraController>();
+            if(followCamera != null)
+            {
+                followCamera.SetFollowTarget(cameraFollowTarget);
+            }
             PlayerManager.Instance.Controller = this;
         }
 
@@ -115,18 +117,11 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-        if(stat.DamagedCount > stat.localDamagedCount)
+        if (stat.DamagedCount > stat.localDamagedCount)
         {
             animator.SetTrigger(animIDTakeDamage);
             stat.localDamagedCount++;
         }
-
-        if (Object.HasInputAuthority == false)
-            return;
-
-        Vector3 lookDirection = cameraFollowTarget.transform.forward;
-        sceneCamera.Camera.transform.localPosition = cameraFollowTarget.position - lookDirection * cameraDistance;
-        sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
     }
 
     public void EquipWeapon(Weapon weapon)
