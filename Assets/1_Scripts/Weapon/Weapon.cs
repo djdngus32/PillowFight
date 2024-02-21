@@ -12,17 +12,27 @@ public class Weapon : NetworkBehaviour
 
     public int localFireCount;
 
-    private int fireTicks;
+    private float fireCoolTime;
 
     [Networked, HideInInspector] public int FireCount { get; set; }
     [Networked] private TickTimer fireCooldown { get; set; }
 
+    public float FireCoolTime => fireCoolTime;
+    public float RemainingFireCoolTime => fireCooldown.IsRunning ? fireCooldown.RemainingTime(Runner).Value : 0;
+    public float FireRatePerSecond { get; private set; }
+
     public override void Spawned()
     {
-        float fireTime = 60f / FireRate; ;
-        fireTicks = Mathf.CeilToInt(fireTime / Runner.DeltaTime);
+        fireCoolTime = 60f / FireRate;
+
+        FireRatePerSecond = 1 / fireCoolTime;
 
         localFireCount = FireCount;
+    }
+
+    public void Equip(PlayerController ownerPlayer)
+    {
+
     }
 
     public void Fire(Vector3 firePosition, Vector3 fireDirection)
@@ -32,7 +42,7 @@ public class Weapon : NetworkBehaviour
 
         Attack(firePosition, fireDirection);
         FireCount++;
-        fireCooldown = TickTimer.CreateFromSeconds(Runner, 0.5f);
+        fireCooldown = TickTimer.CreateFromSeconds(Runner, fireCoolTime);
     }
 
     private void Attack(Vector3 firePosition, Vector3 fireDirection)

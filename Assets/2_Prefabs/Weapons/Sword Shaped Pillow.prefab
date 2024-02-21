@@ -47,10 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damage: 10
-  FireRate: 100
+  FireRate: 60
   HitMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   MaxHitDistance: 100
   localFireCount: 0
   _FireCount: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using Fusion;
 
 public class PlayerController : NetworkBehaviour
@@ -26,6 +27,7 @@ public class PlayerController : NetworkBehaviour
     private float gravity = -9.81f;
     float animationBlend;
     private Animator animator;
+    private Weapon[] weapons;
 
     private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
 
@@ -33,7 +35,6 @@ public class PlayerController : NetworkBehaviour
     private int animIDSpeed;
     private int animIDGrounded;
     private int animIDJump;
-    private int animIDFreeFall;
     private int animIDDeath;
     private int animIDAttack;
     private int animIDTakeDamage;
@@ -59,8 +60,14 @@ public class PlayerController : NetworkBehaviour
         }
 
         InitializeAnimator();
+        InitializeWeapons();
 
-        CurrentWeapon = transform.GetComponentInChildren<Weapon>();
+        if(weapons.Length > 0)
+        {
+            EquipWeapon(weapons[0]);
+        }
+        
+
         stat = transform.GetComponent<PlayerStat>();
     }
 
@@ -98,11 +105,12 @@ public class PlayerController : NetworkBehaviour
         animator.SetBool(animIDGrounded, characterController.isGrounded);
         animator.SetBool(animIDDeath, !stat.IsAlive);
 
-        if(CurrentWeapon != null)
+        if (CurrentWeapon != null)
         {
             if(CurrentWeapon.FireCount > CurrentWeapon.localFireCount)
             {
                 animator.SetTrigger(animIDAttack);
+                animator.SetFloat("AttackRatePerSecond",CurrentWeapon.FireRatePerSecond);
                 CurrentWeapon.localFireCount++;
             }
         }
@@ -121,6 +129,17 @@ public class PlayerController : NetworkBehaviour
         sceneCamera.Camera.transform.localRotation = cameraFollowTarget.rotation;
     }
 
+    public void EquipWeapon(Weapon weapon)
+    {
+        if (weapon == null) return;
+
+        weapon.transform.parent = weaponEquipTransform;
+        weapon.transform.localPosition = Vector3.zero;
+        weapon.transform.localRotation = Quaternion.identity;
+        weapon.transform.localScale = Vector3.one;
+        CurrentWeapon = weapon;
+    }
+
     public void Fire()
     {
         if (CurrentWeapon == null)
@@ -135,10 +154,17 @@ public class PlayerController : NetworkBehaviour
         animIDSpeed = Animator.StringToHash("Speed");
         animIDGrounded = Animator.StringToHash("Grounded");
         animIDJump = Animator.StringToHash("Jump");
-        animIDFreeFall = Animator.StringToHash("FreeFall");
         animIDDeath = Animator.StringToHash("Dead");
         animIDAttack = Animator.StringToHash("Attack");
         animIDTakeDamage = Animator.StringToHash("TakeDamage");
+    }
+
+    private void InitializeWeapons()
+    {
+        if (weaponEquipTransform == null)
+            return;
+
+        weapons = weaponEquipTransform.GetComponentsInChildren<Weapon>();
     }
 
     private void UpdateInput()
