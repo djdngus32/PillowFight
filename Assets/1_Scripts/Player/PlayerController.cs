@@ -16,8 +16,13 @@ public class PlayerController : NetworkBehaviour
     public float walkSpeed = 5f;
     public float jumpForce = 5f;
     public float cameraDistance = 1f;
+
     [Header("Animation")]
     public float locomotionAnimChangeSpeed = 10f;
+
+    [Header("Camera")]
+    [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
+    private float clampLookPitchAngle = 70f;
 
     private float lookPitch;
     private float lookYaw;
@@ -199,6 +204,7 @@ public class PlayerController : NetworkBehaviour
             if (LookRotationDelta.x != 0)
             {
                 lookPitch = lookPitch + LookRotationDelta.x;
+                lookPitch = Mathf.Clamp(lookPitch, -clampLookPitchAngle, clampLookPitchAngle);
             }
 
             if (LookRotationDelta.y != 0)
