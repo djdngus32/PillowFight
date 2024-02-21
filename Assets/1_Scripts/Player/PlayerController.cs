@@ -52,6 +52,7 @@ public class PlayerController : NetworkBehaviour
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
     [Networked, HideInInspector] public Vector2 LookRotationDelta { get; set; }
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
+    [Networked, HideInInspector] private NetworkBool IsGrounded { get; set; }
     #endregion
 
     public override void Spawned()
@@ -109,7 +110,7 @@ public class PlayerController : NetworkBehaviour
 
         animator.SetFloat(animIDSpeed, animationBlend);
         animator.SetBool(animIDJump, IsJump);
-        animator.SetBool(animIDGrounded, characterController.isGrounded);
+        animator.SetBool(animIDGrounded, IsGrounded);
         animator.SetBool(animIDDeath, !stat.IsAlive);
 
         if (CurrentWeapon != null)
@@ -235,7 +236,7 @@ public class PlayerController : NetworkBehaviour
             //Jump
             velocity.y += jumpForce;
         }
-
+        IsGrounded = characterController.isGrounded;
         characterController.Move((MoveDirection * walkSpeed) + velocity * Runner.DeltaTime);
     }
 
