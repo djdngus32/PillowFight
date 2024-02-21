@@ -194,7 +194,7 @@ public class PlayerController : NetworkBehaviour
 
             MoveDirection = inputMoveDirection.normalized;
 
-            LookRotationDelta = inputData.RotationDelta;
+            LookRotationDelta = inputData.RotationDelta * GameManager.Instance.GameSetting.MouseSensitivity;
 
             if (LookRotationDelta.x != 0)
             {
