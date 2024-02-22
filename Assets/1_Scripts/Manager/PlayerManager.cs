@@ -10,8 +10,6 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] private GameObject playerPrefab;
 
-    private PlayerData playerData;
-
     //Player Events
     public Action<int> onChangedHP;
 
@@ -28,14 +26,6 @@ public class PlayerManager : MonoBehaviour
     public void SetRunner(NetworkRunner runner)
     {
         Runner = runner;
-    }
-
-    public void SetPlayerData(PlayerData data)
-    { 
-        if (data == null)
-            return;
-
-        playerData = data;
     }
 
     public IEnumerator CoRespawnPlayer(float delay)

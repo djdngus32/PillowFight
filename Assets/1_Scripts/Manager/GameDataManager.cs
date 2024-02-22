@@ -31,6 +31,11 @@ public class GameDataManager : MonoBehaviour
         PlayerPrefs.SetFloat(key, value);
     }
 
+    public void SaveDataToLocal(string key, string value)
+    {
+        PlayerPrefs.SetString(key, value);
+    }
+
     public int LoadDataToLocal(string key, int defaultValue = 0)
     {
         return PlayerPrefs.GetInt(key, defaultValue);
@@ -39,6 +44,11 @@ public class GameDataManager : MonoBehaviour
     public float LoadDataToLocal(string key, float defaultValue = 0f)
     {
         return PlayerPrefs.GetFloat(key, defaultValue);
+    }
+
+    public string LoadDataToLocal(string key, string defaultValue = "")
+    {
+        return PlayerPrefs.GetString(key, defaultValue);
     }
 
     #endregion

@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     {
         if(Input.backButtonLeavesApp || Input.GetKeyDown(KeyCode.Escape))
         {
+            NetworkManager.Instance.DisConnect();
             Application.Quit();
         }
     }

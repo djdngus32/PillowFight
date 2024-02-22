@@ -11,6 +11,8 @@ public class LoginPopupUI : PopupUI
     [SerializeField] private TMP_InputField nickNameInputField;
     [SerializeField] private Button loginButton;
 
+    public const string PLAYER_NICKNAME_KEY = "PlayerNickName";
+
     private void Start()
     {
         loginButton?.onClick.AddListener(OnClickLoginButton);
@@ -23,10 +25,8 @@ public class LoginPopupUI : PopupUI
             return;
         }
 
-        PlayerData data = new PlayerData();
-        data.Nickname = nickNameInputField.text;
+        GameDataManager.Instance.SaveDataToLocal(PLAYER_NICKNAME_KEY, nickNameInputField.text);
 
-        PlayerManager.Instance?.SetPlayerData(data);
         gameObject.SetActive(false);
 
         NetworkManager.Instance.JoinOrCreateSession();

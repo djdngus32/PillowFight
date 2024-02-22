@@ -45,8 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38c464133bcbd594fb6528eca2b0361c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerRespawnTime: 5
-  _GameState: 0
 --- !u!114 &7894994716650498060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3787048616
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2330949860727930162}
