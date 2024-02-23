@@ -14,6 +14,24 @@ public class PopupManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    public PopupUI GetPopup(EPopupType type)
+    {
+        if (popupContainer != null)
+        {
+            PopupUI popup = popupContainer.GetPopup(type);
+            if (popup == null)
+            {
+                Debug.LogError($"PopupManager::This Container does not have Type[{type}] Popup");
+            }
+            return popup;
+        }
+        else
+        {
+            Debug.LogError("PopupManager::Container is Null!!");
+            return null;
+        }
+    }
+
     public void SetPopupContainer(PopupContainer container)
     {
         if(container != null)
@@ -32,7 +50,7 @@ public class PopupManager : MonoBehaviour
                 Debug.LogError($"PopupManager::This Container does not have Type[{type}] Popup");
                 return;
             }
-            popup.gameObject.SetActive(true);
+            popup.Open();
         }
         else
         {
@@ -42,6 +60,19 @@ public class PopupManager : MonoBehaviour
 
     public void ClosePopup(EPopupType type)
     {
-
+        if (popupContainer != null)
+        {
+            PopupUI popup = popupContainer.GetPopup(type);
+            if (popup == null)
+            {
+                Debug.LogError($"PopupManager::This Container does not have Type[{type}] Popup");
+                return;
+            }
+            popup.Close();
+        }
+        else
+        {
+            Debug.LogError("PopupManager::Container is Null!!");
+        }
     }
 }

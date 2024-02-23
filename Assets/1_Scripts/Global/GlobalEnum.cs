@@ -2,6 +2,7 @@ public enum EPopupType
 {
     NOTICE,
     LOGIN,
+    SCOREBOARD,
 }
 
 public enum EGameState

@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Fusion;
-using Fusion.Sockets;
-using System;
-using UnityEngine.AI;
 using System.Linq;
+
 
 /// <summary>
 /// 게임이 진행되는 씬에 종속되어 전반적인 관리를 하는 클래스 (네트워크 관리도 포함)
@@ -17,11 +16,24 @@ public class FightGameManager : NetworkBehaviour
     [Networked, Capacity(16)]
     public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
 
+    private UnityEvent<List<PlayerData>> OnPlayerDataChanged = new UnityEvent<List<PlayerData>>();
+
+    private List<PlayerData> PlayerDataOrderByKillCount => PlayerData.Select(pair => pair.Value).OrderByDescending(data => data.KillCount).ToList();
+
     private void Awake()
     {
         if(Instance == null)
         {
             Instance = this;
+        }
+    }
+
+    public override void Spawned()
+    {
+        var scoreBoardPopup = PopupManager.Instance.GetPopup(EPopupType.SCOREBOARD) as ScoreBoardPopupUI;
+        if (scoreBoardPopup != null)
+        {
+            OnPlayerDataChanged.AddListener(scoreBoardPopup.UpdateScoreBoard);
         }
     }
 
@@ -43,6 +55,7 @@ public class FightGameManager : NetworkBehaviour
                 playerData.OwnerPlayerPrefs = player;
 
                 PlayerData.Set(player, playerData);
+                RPC_OnChangedPlayerData();
             }
         }
 
@@ -51,6 +64,7 @@ public class FightGameManager : NetworkBehaviour
             if(!tempPlayers.Contains(pair.Key))
             {
                 PlayerData.Remove(pair.Key);
+                RPC_OnChangedPlayerData();
             }
         }
     }
@@ -70,11 +84,19 @@ public class FightGameManager : NetworkBehaviour
             if(PlayerData.TryGet(killedPlayerRef, out PlayerData killedPlayerData))
             {
                 killedPlayerData.DeathCount++;
-                PlayerData.Set(killedPlayerRef, killedPlayerData);
+                PlayerData.Set(killedPlayerRef, killedPlayerData);                
             }
-        }
 
+            RPC_OnChangedPlayerData();
+        }
+        
         //UI에 킬로그 띄우기
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_OnChangedPlayerData()
+    {
+        OnPlayerDataChanged.Invoke(PlayerDataOrderByKillCount);
     }
 
     public Vector3 GetSpawnPoint()

@@ -52,6 +52,7 @@ public class PlayerStat : NetworkBehaviour
             //避擠 籀葬 六六六六
             Debug.Log("Dead!");
             StartCoroutine(PlayerManager.Instance.CoRespawnPlayer(5f));
+            FightGameManager.Instance.RPC_OnKilledPlayer(dealer, Object.StateAuthority);
         }
         else
         {

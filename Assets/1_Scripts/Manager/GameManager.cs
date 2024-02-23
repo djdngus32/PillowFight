@@ -25,10 +25,21 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.backButtonLeavesApp || Input.GetKeyDown(KeyCode.Escape))
+        if (Input.backButtonLeavesApp || Input.GetKeyDown(KeyCode.Escape))
         {
             NetworkManager.Instance.DisConnect();
             Application.Quit();
         }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            PopupManager.Instance.OpenPopup(EPopupType.SCOREBOARD);
+        }
+
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            PopupManager.Instance.ClosePopup(EPopupType.SCOREBOARD);
+        }
+
     }
 }
