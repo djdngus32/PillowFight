@@ -2258,7 +2258,6 @@ MonoBehaviour:
   characterController: {fileID: 7741799144299815187}
   walkSpeed: 0.15
   jumpForce: 5
-  cameraDistance: 1
   locomotionAnimChangeSpeed: 10
   clampLookPitchAngle: 70
   equippedWeapon: {fileID: 8213611174974854777}

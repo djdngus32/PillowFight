@@ -297,18 +297,16 @@ public class PlayerController : NetworkBehaviour
 
     private void OnAttackSwingStart(AnimationEvent animationEvent)
     {
-        if (equippedWeapon == null)
+        //애니메이션 이벤트는 모든 클라이언트에서 발생하기 때문에 모든 클라이언트에서 Attack을 호출하면 공격이 여러번 들어가게 되기 때문에
+        //소유권이 있는 사람만 Attack 함수를 호출 할 수 있게 해야한다.
+        if (equippedWeapon == null || Object.HasInputAuthority == false)
             return;
 
-        equippedWeapon.StartAttack();
+        equippedWeapon.Attack(transform.position + characterController.center, transform.rotation);
     }
 
     private void OnAttackSwingEnd(AnimationEvent animationEvent)
     {
-        if (equippedWeapon == null)
-            return;
-
-        equippedWeapon.EndAttack();
     }
 
     private void OnFootstep(AnimationEvent animationEvent)

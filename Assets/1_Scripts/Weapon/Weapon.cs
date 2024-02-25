@@ -5,35 +5,31 @@ using Fusion;
 
 public class Weapon : NetworkBehaviour
 {
-    [SerializeField] private DamageTrigger damageTrigger;
     [SerializeField] private int damage = 10;
     [SerializeField] private float attackSpeed = 1f;
-    
+    [SerializeField] private float damageBoxSize = 1f;
+    [SerializeField] private float damageBoxDistance = 2f;
+    [SerializeField] private LayerMask hitLayerMask;
+
     public float AttackSpeed => attackSpeed;
     public float AttackCooldownTime => 1 / attackSpeed;
 
-    public override void Spawned()
-    { 
-        if(damageTrigger.IsEnable == true)
-        {
-            damageTrigger.DisableDamageTrigger();
-        }
-    }
-    
-    public void StartAttack()
+    public void Attack(Vector3 attackPosition, Quaternion attackRotation)
     {
-        if(damageTrigger != null)
-        {
-            //데미지 트리거 활성화
-            damageTrigger.EnableDamageTrigger(Object.StateAuthority, damage);
-        }
-    }
+        float halfBoxSize = damageBoxSize * 0.5f;
+        float halfBoxDistance = damageBoxDistance * 0.5f;
 
-    public void EndAttack()
-    {
-        if (damageTrigger != null)
+        var hited = Physics.OverlapBox(attackPosition + (attackRotation * Vector3.forward * halfBoxDistance), new Vector3(halfBoxSize, halfBoxSize, halfBoxDistance), attackRotation, hitLayerMask);
+        if(hited.Length > 0)
         {
-            damageTrigger.DisableDamageTrigger();
+            for(int i = 0; i < hited.Length; i++)
+            {
+                var enemyStat = hited[i].transform.GetComponent<PlayerStat>();
+                if (enemyStat == null || enemyStat.HasStateAuthority == Object.HasStateAuthority || enemyStat.IsAlive == false)
+                    continue;
+
+                enemyStat.RPC_ApplyDamage(Object.StateAuthority, damage);
+            }
         }
     }
 }
