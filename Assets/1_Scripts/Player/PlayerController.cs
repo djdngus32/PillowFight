@@ -8,50 +8,58 @@ public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private Transform cameraFollowTarget;
     [SerializeField] private CharacterController characterController;
-    [SerializeField] private Transform weaponEquipTransform;    
 
     [Header("Movement")]
     public float walkSpeed = 5f;
     public float jumpForce = 5f;
-    public float cameraDistance = 1f;
 
     [Header("Animation")]
     public float locomotionAnimChangeSpeed = 10f;
-    public AnimationClip attackAnimClip;
 
     [Header("Camera")]
     [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
     private float clampLookPitchAngle = 70f;
 
-    private float lookPitch;
-    private float lookYaw;
-    private float animationWalkSpeed = 2f;
-    private float animationRunSpeed = 6f;
+    [Header("Weapon")]
+    [SerializeField] private Weapon equippedWeapon;
+
+    //Movement 관련 변수
     private Vector3 velocity;
-    private float gravity = -9.81f;
-    private float animationBlend;
+
+    //Animation 관련 변수
     private Animator animator;
-    private Weapon[] weapons;
+    private float animationBlend;
+    private readonly float ANIMATION_WALK_SPEED = 2f;
+    private readonly float ANIMATION_RUN_SPEED = 6f;
+    private readonly float ANIMATION_ATTACK_LENGTH = 1.4f;
 
-    private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
-
-    //공격 관련 변수들
-    private int localAttackCount;
-    [Networked, HideInInspector] private int AttackCount { get; set; }
-    [Networked] private TickTimer AttackCooldownTimer { get; set; }
-
-    // animation IDs
+    // 애니메이션 ID
     private int animIDSpeed;
     private int animIDGrounded;
     private int animIDJump;
     private int animIDDeath;
     private int animIDAttack;
-    private int animIDTakeDamage;
+    private int animIDTakeDamage;//Parameter Hash
+    private int animNameIDTakeDamage;//StateName Hash
+
+    //Camera 관련 변수
+    private float lookPitch;
+    private float lookYaw;
+
+    //공격 관련 변수들
+    private bool isPressAttackButton;
+    private int localAttackCount;
+    [Networked, HideInInspector] private int AttackCount { get; set; }
+    [Networked] private TickTimer AttackCooldownTimer { get; set; }
 
     private PlayerStat stat;
 
+    //움직임 동기화 중 떨림 방지용 변수
+    private Vector3 lastAntiJitterPosition;
+    private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
+    
+
     #region Networked 변수
-    [Networked, HideInInspector] public Weapon CurrentWeapon { get; set; }
     [Networked, HideInInspector] public Vector3 OriginPosition { get; set; }
     [Networked, HideInInspector] public Quaternion OriginRotation { get; set; }
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
@@ -59,6 +67,8 @@ public class PlayerController : NetworkBehaviour
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
     [Networked, HideInInspector] private NetworkBool IsGrounded { get; set; }
     #endregion
+
+    private readonly float GRAVITY = -9.81f;
 
     public override void Spawned()
     {
@@ -73,12 +83,6 @@ public class PlayerController : NetworkBehaviour
         }
 
         InitializeAnimator();
-        InitializeWeapons();
-
-        if(weapons.Length > 0)
-        {
-            EquipWeapon(weapons[0]);
-        }
 
         localAttackCount = AttackCount;
 
@@ -97,6 +101,7 @@ public class PlayerController : NetworkBehaviour
 
         UpdateRotation();
         UpdateMovement();
+        UpdateAttack();        
 
         OriginPosition = transform.position;
         OriginRotation = transform.rotation;
@@ -106,12 +111,9 @@ public class PlayerController : NetworkBehaviour
     {
         SynchronizeTransform(OriginPosition, OriginRotation);
 
-        //애니메이션 재생
-        bool isPressedSprintButton = false;
-        float targetSpeed = isPressedSprintButton ? animationRunSpeed : animationWalkSpeed;
-        targetSpeed *= MoveDirection.magnitude;
+        float moveAnimationSpeed = ANIMATION_WALK_SPEED * MoveDirection.magnitude;
 
-        animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Runner.DeltaTime * locomotionAnimChangeSpeed);
+        animationBlend = Mathf.Lerp(animationBlend, moveAnimationSpeed, Runner.DeltaTime * locomotionAnimChangeSpeed);
         if (animationBlend < 0.01f) animationBlend = 0f;
 
         animator.SetFloat(animIDSpeed, animationBlend);
@@ -119,12 +121,12 @@ public class PlayerController : NetworkBehaviour
         animator.SetBool(animIDGrounded, IsGrounded);
         animator.SetBool(animIDDeath, !stat.IsAlive);        
 
-        if (CurrentWeapon != null)
+        if (equippedWeapon != null)
         {
             if(AttackCount > localAttackCount)
             {
                 animator.SetTrigger(animIDAttack);
-                animator.SetFloat("AttackRatePerSecond", (attackAnimClip.length) / CurrentWeapon.AttackCooldownTime);
+                animator.SetFloat("AttackRatePerSecond", ANIMATION_ATTACK_LENGTH * equippedWeapon.AttackSpeed);
                 localAttackCount++;
             }
         }
@@ -136,28 +138,11 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public void EquipWeapon(Weapon weapon)
-    {
-        if (weapon == null) return;
-
-        weapon.transform.parent = weaponEquipTransform;
-        weapon.transform.localPosition = Vector3.zero;
-        weapon.transform.localRotation = Quaternion.identity;
-        weapon.transform.localScale = Vector3.one;
-        CurrentWeapon = weapon;
-    }
-
     public void Attack()
     {
-        if (CurrentWeapon == null)
-            return;
-
-        if (AttackCooldownTimer.ExpiredOrNotRunning(Runner) == false)
-            return;
-
         Debug.Log("Attack!!");
 
-        AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, CurrentWeapon.AttackCooldownTime);
+        AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, equippedWeapon.AttackCooldownTime);
         AttackCount++;        
     }
 
@@ -170,14 +155,7 @@ public class PlayerController : NetworkBehaviour
         animIDDeath = Animator.StringToHash("Dead");
         animIDAttack = Animator.StringToHash("Attack");
         animIDTakeDamage = Animator.StringToHash("TakeDamage");
-    }
-
-    private void InitializeWeapons()
-    {
-        if (weaponEquipTransform == null)
-            return;
-
-        weapons = weaponEquipTransform.GetComponentsInChildren<Weapon>();
+        animNameIDTakeDamage = Animator.StringToHash("Combat_TakeDamage");
     }
 
     private void UpdateInput()
@@ -203,12 +181,7 @@ public class PlayerController : NetworkBehaviour
                 inputMoveDirection += (-right);
 
             if (inputData.IsPressed(PlayerInputData.BUTTON_RIGHT))
-                inputMoveDirection += right;
-
-            if(inputData.IsPressed(PlayerInputData.BUTTON_ATTACK))
-            {
-                Attack();
-            }
+                inputMoveDirection += right;            
 
             MoveDirection = inputMoveDirection.normalized;
 
@@ -224,8 +197,9 @@ public class PlayerController : NetworkBehaviour
             {
                 lookYaw = lookYaw + LookRotationDelta.y;
             }
-
+            
             IsJump = inputData.IsPressed(PlayerInputData.BUTTON_JUMP);
+            isPressAttackButton = inputData.IsPressed(PlayerInputData.BUTTON_ATTACK);
         }
     }
 
@@ -242,7 +216,7 @@ public class PlayerController : NetworkBehaviour
             velocity = new Vector3(0, -1f, 0);
         }
 
-        velocity.y += gravity * Runner.DeltaTime;
+        velocity.y += GRAVITY * Runner.DeltaTime;
         if(IsJump && characterController.isGrounded)
         {
             //Jump
@@ -252,7 +226,28 @@ public class PlayerController : NetworkBehaviour
         characterController.Move((MoveDirection * walkSpeed) + velocity * Runner.DeltaTime);
     }
 
-    Vector3 lastAntiJitterPosition;
+    private void UpdateAttack()
+    {
+        if (isPressAttackButton // 공격버튼을 누르고있고
+            && IsGrounded // 발이 땅에 붙어있고
+            && IsPlayAnimation(animNameIDTakeDamage) == false // 맞는중이 아니여야하고
+            && AttackCooldownTimer.ExpiredOrNotRunning(Runner)) // 공격쿨타임이 돌아왔다면
+        {
+            //공격한다.
+            Attack();
+        }
+    }
+
+    /// <summary>
+    /// 해당 애니메이션이 재생중인지 확인하는 함수
+    /// </summary>
+    /// <param name="animationStateID">알고싶은 애니메이션 State의 이름을 Animator.StringToHash로 변환한 값</param>
+    /// <returns>해당 애니메이션이 재생중이다면 true를 반환</returns>
+    private bool IsPlayAnimation(int animationStateID)
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.shortNameHash == animationStateID;
+    }
 
     private void SynchronizeTransform(Vector3 targetPosition, Quaternion targetRotation)
     {
@@ -286,18 +281,18 @@ public class PlayerController : NetworkBehaviour
 
     private void OnAttackSwingStart(AnimationEvent animationEvent)
     {
-        if (CurrentWeapon == null)
+        if (equippedWeapon == null)
             return;
 
-        CurrentWeapon.StartAttack();
+        equippedWeapon.StartAttack();
     }
 
     private void OnAttackSwingEnd(AnimationEvent animationEvent)
     {
-        if (CurrentWeapon == null)
+        if (equippedWeapon == null)
             return;
 
-        CurrentWeapon.EndAttack();
+        equippedWeapon.EndAttack();
     }
 
     private void OnFootstep(AnimationEvent animationEvent)

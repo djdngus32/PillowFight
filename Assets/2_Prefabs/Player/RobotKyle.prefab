@@ -2256,14 +2256,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraFollowTarget: {fileID: 5135142002436254718}
   characterController: {fileID: 7741799144299815187}
-  weaponEquipTransform: {fileID: 1747371765723512150}
   walkSpeed: 0.15
   jumpForce: 5
   cameraDistance: 1
   locomotionAnimChangeSpeed: 10
-  attackAnimClip: {fileID: 7400000, guid: f1613afb92638e743bace9a9392b5ee7, type: 3}
   clampLookPitchAngle: 70
-  _CurrentWeapon: {fileID: 0}
+  equippedWeapon: {fileID: 8213611174974854777}
   _OriginPosition: {x: 0, y: 0, z: 0}
   _OriginRotation: {x: 0, y: 0, z: 0, w: 0}
   _MoveDirection: {x: 0, y: 0, z: 0}
@@ -2573,6 +2571,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8213611174974854777 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7586238290056468119, guid: 991af13cd3b24674da530e90645e409c, type: 3}
+  m_PrefabInstance: {fileID: 1782053671757299950}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 583b5577835aa71438bcc5735850177c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &8408172157648189688 stripped

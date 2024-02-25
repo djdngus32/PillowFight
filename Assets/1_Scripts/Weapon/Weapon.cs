@@ -19,11 +19,6 @@ public class Weapon : NetworkBehaviour
             damageTrigger.DisableDamageTrigger();
         }
     }
-
-    public void Equip(PlayerController ownerPlayer)
-    {
-
-    }
     
     public void StartAttack()
     {
