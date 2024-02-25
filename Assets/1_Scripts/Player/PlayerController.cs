@@ -144,10 +144,8 @@ public class PlayerController : NetworkBehaviour
 
     public void Attack()
     {
-        Debug.Log("Attack!!");
-
         AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, equippedWeapon.AttackCooldownTime);
-        AttackCount++;        
+        AttackCount++;
     }
 
     private void InitializeAnimator()

@@ -13,6 +13,8 @@ public class FightGameManager : NetworkBehaviour
 {
     public static FightGameManager Instance { get; private set; }
 
+    private bool isSentPlayerNickname = false;
+
     [Networked, Capacity(16)]
     public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
 
@@ -40,6 +42,15 @@ public class FightGameManager : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         UpdatePlayerData();
+    }
+
+    public override void Render()
+    {
+        if(isSentPlayerNickname == false)
+        {
+            RPC_SetPlayerNickname(Runner.LocalPlayer, GameDataManager.Instance.LoadDataToLocal(GlobalString.DATA_KEY_PLAYER_NICKNAME, Runner.LocalPlayer.ToString()));
+            isSentPlayerNickname = true;
+        }
     }
 
     private void UpdatePlayerData()
@@ -97,6 +108,16 @@ public class FightGameManager : NetworkBehaviour
     private void RPC_OnChangedPlayerData()
     {
         OnPlayerDataChanged.Invoke(PlayerDataOrderByKillCount);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+    private void RPC_SetPlayerNickname(PlayerRef sendPlayer, string nickname)
+    {
+        var playerData = PlayerData.Get(sendPlayer);
+        playerData.Nickname = nickname;
+        PlayerData.Set(sendPlayer, playerData);
+
+        RPC_OnChangedPlayerData();
     }
 
     public Vector3 GetSpawnPoint()

@@ -9,9 +9,7 @@ public class LoginPopupUI : PopupUI
     public override EPopupType PopupType => EPopupType.LOGIN;
 
     [SerializeField] private TMP_InputField nickNameInputField;
-    [SerializeField] private Button loginButton;
-
-    public const string PLAYER_NICKNAME_KEY = "PlayerNickName";
+    [SerializeField] private Button loginButton;    
 
     private void Start()
     {
@@ -25,7 +23,7 @@ public class LoginPopupUI : PopupUI
             return;
         }
 
-        GameDataManager.Instance.SaveDataToLocal(PLAYER_NICKNAME_KEY, nickNameInputField.text);
+        GameDataManager.Instance.SaveDataToLocal(GlobalString.DATA_KEY_PLAYER_NICKNAME, nickNameInputField.text);
 
         gameObject.SetActive(false);
 
