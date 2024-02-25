@@ -24,7 +24,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Weapon equippedWeapon;
 
     //Movement 관련 변수
-    private Vector3 velocity;
+    private float velocityY;
 
     //Animation 관련 변수
     private Animator animator;
@@ -34,13 +34,16 @@ public class PlayerController : NetworkBehaviour
     private readonly float ANIMATION_ATTACK_LENGTH = 1.4f;
 
     // 애니메이션 ID
+    //Parameter Hash
     private int animIDSpeed;
     private int animIDGrounded;
     private int animIDJump;
     private int animIDDeath;
     private int animIDAttack;
-    private int animIDTakeDamage;//Parameter Hash
-    private int animNameIDTakeDamage;//StateName Hash
+    private int animIDTakeDamage;
+    //StateName Hash
+    private int animNameIDAttack;
+    private int animNameIDTakeDamage;
 
     //Camera 관련 변수
     private float lookPitch;
@@ -96,6 +99,7 @@ public class PlayerController : NetworkBehaviour
 
         UpdateInput();
 
+        //죽었다면 아무것도 못한다.
         if (stat != null && stat.IsAlive == false)
             return;
 
@@ -155,6 +159,7 @@ public class PlayerController : NetworkBehaviour
         animIDDeath = Animator.StringToHash("Dead");
         animIDAttack = Animator.StringToHash("Attack");
         animIDTakeDamage = Animator.StringToHash("TakeDamage");
+        animNameIDAttack = Animator.StringToHash("Combat_Attack");
         animNameIDTakeDamage = Animator.StringToHash("Combat_TakeDamage");
     }
 
@@ -211,19 +216,28 @@ public class PlayerController : NetworkBehaviour
 
     private void UpdateMovement()
     {
+        Vector3 moveVector = Vector3.zero;
         if(characterController.isGrounded)
         {
-            velocity = new Vector3(0, -1f, 0);
+            velocityY = 0;
         }
 
-        velocity.y += GRAVITY * Runner.DeltaTime;
-        if(IsJump && characterController.isGrounded)
+        //공격중이거나 피격중이면 움직이지 못한다.
+        if(IsPlayAnimation(animNameIDAttack) == false && IsPlayAnimation(animNameIDTakeDamage) == false)
         {
-            //Jump
-            velocity.y += jumpForce;
+            moveVector = MoveDirection * walkSpeed;
+            if (IsJump && characterController.isGrounded)
+            {
+                //Jump
+                velocityY += jumpForce;
+            }
         }
+        velocityY += GRAVITY * Runner.DeltaTime;
+
+        moveVector.y = velocityY * Runner.DeltaTime;
+
         IsGrounded = characterController.isGrounded;
-        characterController.Move((MoveDirection * walkSpeed) + velocity * Runner.DeltaTime);
+        characterController.Move(moveVector);
     }
 
     private void UpdateAttack()
@@ -245,8 +259,10 @@ public class PlayerController : NetworkBehaviour
     /// <returns>해당 애니메이션이 재생중이다면 true를 반환</returns>
     private bool IsPlayAnimation(int animationStateID)
     {
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        return stateInfo.shortNameHash == animationStateID;
+        AnimatorStateInfo currentStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo nextStateInfo = animator.GetNextAnimatorStateInfo(0);
+
+        return currentStateInfo.shortNameHash == animationStateID || nextStateInfo.shortNameHash == animationStateID;
     }
 
     private void SynchronizeTransform(Vector3 targetPosition, Quaternion targetRotation)
