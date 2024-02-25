@@ -2257,12 +2257,13 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 5135142002436254718}
   characterController: {fileID: 7741799144299815187}
   weaponEquipTransform: {fileID: 1747371765723512150}
-  _CurrentWeapon: {fileID: 0}
   walkSpeed: 0.15
   jumpForce: 5
   cameraDistance: 1
   locomotionAnimChangeSpeed: 10
-  playerCameraRoot: {fileID: 0}
+  attackAnimClip: {fileID: 7400000, guid: f1613afb92638e743bace9a9392b5ee7, type: 3}
+  clampLookPitchAngle: 70
+  _CurrentWeapon: {fileID: 0}
   _OriginPosition: {x: 0, y: 0, z: 0}
   _OriginRotation: {x: 0, y: 0, z: 0, w: 0}
   _MoveDirection: {x: 0, y: 0, z: 0}

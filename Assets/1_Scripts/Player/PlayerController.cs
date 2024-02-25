@@ -8,9 +8,7 @@ public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private Transform cameraFollowTarget;
     [SerializeField] private CharacterController characterController;
-    [SerializeField] private Transform weaponEquipTransform;
-
-    [Networked] public Weapon CurrentWeapon { get; set; }
+    [SerializeField] private Transform weaponEquipTransform;    
 
     [Header("Movement")]
     public float walkSpeed = 5f;
@@ -19,6 +17,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Animation")]
     public float locomotionAnimChangeSpeed = 10f;
+    public AnimationClip attackAnimClip;
 
     [Header("Camera")]
     [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
@@ -30,11 +29,16 @@ public class PlayerController : NetworkBehaviour
     private float animationRunSpeed = 6f;
     private Vector3 velocity;
     private float gravity = -9.81f;
-    float animationBlend;
+    private float animationBlend;
     private Animator animator;
     private Weapon[] weapons;
 
     private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
+
+    //공격 관련 변수들
+    private int localAttackCount;
+    [Networked, HideInInspector] private int AttackCount { get; set; }
+    [Networked] private TickTimer AttackCooldownTimer { get; set; }
 
     // animation IDs
     private int animIDSpeed;
@@ -47,6 +51,7 @@ public class PlayerController : NetworkBehaviour
     private PlayerStat stat;
 
     #region Networked 변수
+    [Networked, HideInInspector] public Weapon CurrentWeapon { get; set; }
     [Networked, HideInInspector] public Vector3 OriginPosition { get; set; }
     [Networked, HideInInspector] public Quaternion OriginRotation { get; set; }
     [Networked, HideInInspector] public Vector3 MoveDirection { get; set; }
@@ -74,7 +79,8 @@ public class PlayerController : NetworkBehaviour
         {
             EquipWeapon(weapons[0]);
         }
-        
+
+        localAttackCount = AttackCount;
 
         stat = transform.GetComponent<PlayerStat>();
     }
@@ -111,15 +117,15 @@ public class PlayerController : NetworkBehaviour
         animator.SetFloat(animIDSpeed, animationBlend);
         animator.SetBool(animIDJump, IsJump);
         animator.SetBool(animIDGrounded, IsGrounded);
-        animator.SetBool(animIDDeath, !stat.IsAlive);
+        animator.SetBool(animIDDeath, !stat.IsAlive);        
 
         if (CurrentWeapon != null)
         {
-            if(CurrentWeapon.FireCount > CurrentWeapon.localFireCount)
+            if(AttackCount > localAttackCount)
             {
                 animator.SetTrigger(animIDAttack);
-                animator.SetFloat("AttackRatePerSecond",CurrentWeapon.FireRatePerSecond);
-                CurrentWeapon.localFireCount++;
+                animator.SetFloat("AttackRatePerSecond", (attackAnimClip.length) / CurrentWeapon.AttackCooldownTime);
+                localAttackCount++;
             }
         }
 
@@ -141,12 +147,18 @@ public class PlayerController : NetworkBehaviour
         CurrentWeapon = weapon;
     }
 
-    public void Fire()
+    public void Attack()
     {
         if (CurrentWeapon == null)
             return;
 
-        CurrentWeapon.Fire(CurrentWeapon.gameObject.transform.position, transform.forward);
+        if (AttackCooldownTimer.ExpiredOrNotRunning(Runner) == false)
+            return;
+
+        Debug.Log("Attack!!");
+
+        AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, CurrentWeapon.AttackCooldownTime);
+        AttackCount++;        
     }
 
     private void InitializeAnimator()
@@ -195,7 +207,7 @@ public class PlayerController : NetworkBehaviour
 
             if(inputData.IsPressed(PlayerInputData.BUTTON_ATTACK))
             {
-                Fire();
+                Attack();
             }
 
             MoveDirection = inputMoveDirection.normalized;
@@ -270,6 +282,24 @@ public class PlayerController : NetworkBehaviour
         transform.SetPositionAndRotation(vector, targetRotation);
     }
 
+    #region 애니메이션 이벤트
+
+    private void OnAttackSwingStart(AnimationEvent animationEvent)
+    {
+        if (CurrentWeapon == null)
+            return;
+
+        CurrentWeapon.StartAttack();
+    }
+
+    private void OnAttackSwingEnd(AnimationEvent animationEvent)
+    {
+        if (CurrentWeapon == null)
+            return;
+
+        CurrentWeapon.EndAttack();
+    }
+
     private void OnFootstep(AnimationEvent animationEvent)
     {
         //사운드 재생
@@ -279,4 +309,6 @@ public class PlayerController : NetworkBehaviour
     {
         //사운드 재생
     }
+
+    #endregion
 }
