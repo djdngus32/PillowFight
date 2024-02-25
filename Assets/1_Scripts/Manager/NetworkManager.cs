@@ -36,6 +36,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     /// </summary>
     public void DisConnect()
     {
+        if (runner == null || runner.IsRunning == false)
+            return;
+
         runner.Shutdown();
         runner = null;
     }

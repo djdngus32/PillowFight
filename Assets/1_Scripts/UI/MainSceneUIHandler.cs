@@ -21,6 +21,6 @@ public class MainSceneUIHandler : MonoBehaviour
 
     private void OnClickQuitButton()
     {
-
+        GameManager.Instance.QuitGame();
     }
 }

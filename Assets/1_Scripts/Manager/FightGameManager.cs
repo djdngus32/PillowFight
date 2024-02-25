@@ -36,6 +36,16 @@ public class FightGameManager : NetworkBehaviour
         {
 
         }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            PopupManager.Instance.OpenPopup(EPopupType.SCOREBOARD);
+        }
+
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            PopupManager.Instance.ClosePopup(EPopupType.SCOREBOARD);
+        }
     }
 
     public override void Spawned()
