@@ -30,6 +30,14 @@ public class FightGameManager : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+
+        }
+    }
+
     public override void Spawned()
     {
         var scoreBoardPopup = PopupManager.Instance.GetPopup(EPopupType.SCOREBOARD) as ScoreBoardPopupUI;
@@ -37,6 +45,9 @@ public class FightGameManager : NetworkBehaviour
         {
             OnPlayerDataChanged.AddListener(scoreBoardPopup.UpdateScoreBoard);
         }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public override void FixedUpdateNetwork()
