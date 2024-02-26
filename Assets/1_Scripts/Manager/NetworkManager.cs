@@ -71,8 +71,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         }
 
         if (runner.IsSceneAuthority)
-        {
-            
+        {            
             var op = runner.LoadScene(SCENE_NAME_FIELD, LoadSceneMode.Single, LocalPhysicsMode.None, true);
 
             while (op.IsDone == false)
@@ -85,12 +84,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         //yield return new WaitUntil(() => runner.IsConnectedToServer == true);
         PlayerManager.Instance.SetRunner(runner);
-        PlayerManager.Instance.SpawnPlayer(runner);
-
-        if(UIManager.Instance.LoadingUI.IsOpen)
-        {
-            UIManager.Instance.LoadingUI.Close();
-        }
 
         yield return null;
     }

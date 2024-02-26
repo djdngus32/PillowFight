@@ -39,14 +39,23 @@ public class PlayerManager : MonoBehaviour
         if (Controller != null)
             DespawnPlayer(Runner);
 
-        SpawnPlayer(Runner);
+        SpawnPlayer(Runner, FightGameManager.Instance?.GetSpawnPoint());
 
         yield return null;
     }
 
-    public void SpawnPlayer(NetworkRunner runner)
+    public void SpawnPlayer(NetworkRunner runner, Transform spawnPoint)
     {
-        runner.Spawn(playerPrefab, new Vector3(0, 1, 0), Quaternion.identity, runner.LocalPlayer);
+        Vector3 spawnPosition = new Vector3(0, 1, 0);
+        Quaternion spawnRotation = Quaternion.identity;
+
+        if (spawnPoint != null)
+        {
+            spawnPosition = spawnPoint.position;
+            spawnRotation = spawnPoint.rotation;
+        }
+
+        runner.Spawn(playerPrefab, spawnPosition, spawnRotation, runner.LocalPlayer);
     }
 
     public void DespawnPlayer(NetworkRunner runner)

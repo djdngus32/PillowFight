@@ -14,6 +14,7 @@ public class FightGameManager : NetworkBehaviour
     public static FightGameManager Instance { get; private set; }
 
     private bool isSentPlayerNickname = false;
+    private List<Transform> spawnPointList = new List<Transform>();
 
     [Networked, Capacity(16)]
     public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
@@ -65,6 +66,15 @@ public class FightGameManager : NetworkBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        InitSpawnPoints();
+
+        PlayerManager.Instance.SpawnPlayer(Runner, GetSpawnPoint());
+
+        if (UIManager.Instance.LoadingUI.IsOpen)
+        {
+            UIManager.Instance.LoadingUI.Close();
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -78,6 +88,19 @@ public class FightGameManager : NetworkBehaviour
         {
             RPC_SetPlayerNickname(Runner.LocalPlayer, GameDataManager.Instance.LoadDataToLocal(GlobalString.DATA_KEY_PLAYER_NICKNAME, Runner.LocalPlayer.ToString()));
             isSentPlayerNickname = true;
+        }
+    }
+
+    private void InitSpawnPoints()
+    {
+        GameObject spawnPoints = GameObject.Find("Spawn Points");
+        if(spawnPoints != null && spawnPoints.transform.childCount > 0)
+        {
+            spawnPointList.Clear();
+            foreach(Transform spawnPoint in spawnPoints.transform)
+            {
+                spawnPointList.Add(spawnPoint);
+            }
         }
     }
 
@@ -148,8 +171,13 @@ public class FightGameManager : NetworkBehaviour
         RPC_OnChangedPlayerData();
     }
 
-    public Vector3 GetSpawnPoint()
+    public Transform GetSpawnPoint()
     {
-        return new Vector3(0, 1f, 0);
+        if (spawnPointList == null || spawnPointList.Count == 0)
+            return null;
+
+        int rand = Random.Range(0, spawnPointList.Count);
+
+        return spawnPointList[rand];
     }
 }

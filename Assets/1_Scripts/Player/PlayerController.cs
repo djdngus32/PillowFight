@@ -60,7 +60,7 @@ public class PlayerController : NetworkBehaviour
     //움직임 동기화 중 떨림 방지용 변수
     private Vector3 lastAntiJitterPosition;
     private Vector2 antiJitterDistance = new Vector2(0.025f, 0.01f);
-    
+
 
     #region Networked 변수
     [Networked, HideInInspector] public Vector3 OriginPosition { get; set; }
@@ -69,42 +69,44 @@ public class PlayerController : NetworkBehaviour
     [Networked, HideInInspector] public Vector2 LookRotationDelta { get; set; }
     [Networked, HideInInspector] public NetworkBool IsJump { get; set; }
     [Networked, HideInInspector] private NetworkBool IsGrounded { get; set; }
+    [Networked] private TickTimer PauseMovementTimer { get; set; }
     #endregion
 
     private readonly float GRAVITY = -9.81f;
 
     public override void Spawned()
     {
-        if(Object.HasInputAuthority == true)
+        if (Object.HasInputAuthority == true)
         {
             FollowCameraController followCamera = FindAnyObjectByType<FollowCameraController>();
-            if(followCamera != null)
+            if (followCamera != null)
             {
                 followCamera.SetFollowTarget(cameraFollowTarget);
             }
             PlayerManager.Instance.Controller = this;
+            PauseMovementTimer = TickTimer.CreateFromSeconds(Runner, 0.5f);
         }
 
         InitializeAnimator();
 
         localAttackCount = AttackCount;
 
-        stat = transform.GetComponent<PlayerStat>();
+        stat = transform.GetComponent<PlayerStat>();       
     }
 
     public override void FixedUpdateNetwork()
     {
-        if(Object.HasInputAuthority ==  false)
-            Debug.Log($"Player Id : {Object.InputAuthority.PlayerId}");
-
         UpdateInput();
 
         //죽었다면 아무것도 못한다.
         if (stat != null && stat.IsAlive == false)
             return;
 
-        UpdateRotation();
-        UpdateMovement();
+        if(PauseMovementTimer.ExpiredOrNotRunning(Runner))
+        {
+            UpdateRotation();
+            UpdateMovement();
+        }
         UpdateAttack();        
 
         OriginPosition = transform.position;
