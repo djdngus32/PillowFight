@@ -7,9 +7,12 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+    [SerializeField] private GameObject dontDestroyCanvas;
     [SerializeField] private LoadingUIHandler loadingUI;
+    [SerializeField] private PauseUIHandler pauseUI;
 
     public LoadingUIHandler LoadingUI => loadingUI;
+    public PauseUIHandler PauseUI => pauseUI;
 
     private void Awake()
     {
@@ -19,6 +22,7 @@ public class UIManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(this);
+        DontDestroyOnLoad(dontDestroyCanvas);
     }
 
     private void Start()

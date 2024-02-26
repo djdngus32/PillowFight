@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance {  get; private set; }
 
+    public bool IsPause { get; private set; }
     public GameSetting GameSetting { get; private set; }
 
     private void Awake()
@@ -20,6 +21,22 @@ public class GameManager : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }        
+    }
+
+    public void ResumeGame()
+    {
+        UIManager.Instance.PauseUI.Close();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        IsPause = false;
+    }
+
+    public void PauseGame()
+    {
+        UIManager.Instance.PauseUI.Open();
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        IsPause = true;
     }
 
     public void QuitGame()
