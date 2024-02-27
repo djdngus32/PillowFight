@@ -11,6 +11,7 @@ public struct PlayerInputData : INetworkInput
     public const uint BUTTON_RIGHT = 1 << 4;
     public const uint BUTTON_ATTACK = 1 << 5;
 
+    public Vector2 MoveDirection;
     public Vector2 RotationDelta;
     public uint buttons;
 
