@@ -26,12 +26,6 @@ public class PlayerController : NetworkBehaviour
     [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
     private float clampLookPitchAngle = 70f;
 
-    //Animation 관련 변수
-    private float animationBlend;
-    private readonly float ANIMATION_WALK_SPEED = 2f;
-    private readonly float ANIMATION_RUN_SPEED = 6f;
-    private readonly float ANIMATION_ATTACK_LENGTH = 1.4f;
-
     // 애니메이션 ID
     //Parameter Hash
     private int animIDMoveSpeed;
@@ -94,7 +88,6 @@ public class PlayerController : NetworkBehaviour
 
     public override void Render()
     {
-
         Vector3 moveVelocity = GetAnimationMoveVelocity();
 
         animator.SetFloat("MoveX", moveVelocity.x, 0.05f, Time.deltaTime);
@@ -104,7 +97,7 @@ public class PlayerController : NetworkBehaviour
         animator.SetBool(animIDIsGrounded, KCC.IsGrounded);
         animator.SetBool(animIDIsAlive, stat.IsAlive);
 
-        if(visibleJumpCount < JumpCount)
+        if (visibleJumpCount < JumpCount)
         {
             //트리거로 변경할 것
             animator.SetTrigger(animIDJump);

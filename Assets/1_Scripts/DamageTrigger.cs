@@ -12,12 +12,13 @@ public class DamageTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent<PlayerStat>(out var playerStat))
+        var playerStat = other.GetComponentInParent<PlayerStat>();
+        if (playerStat != null)
         {
-            if(playerStat.Object.HasStateAuthority)
+            if (playerStat.HasStateAuthority)
             {
                 playerStat.RPC_ApplyDamage(PlayerRef.None, damage);
-            }            
+            }
         }
     }
 }
