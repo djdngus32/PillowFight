@@ -7,11 +7,13 @@ public class MainSceneUIHandler : MonoBehaviour
 {
     [SerializeField] private Button startButton;
     [SerializeField] private Button quitButton;
+    [SerializeField] private Button settingButton;
 
     private void Awake()
     {
         startButton?.onClick.AddListener(OnClickStartButton);
         quitButton?.onClick.AddListener(OnClickQuitButton);
+        settingButton?.onClick.AddListener(OnClickSettingButton);
     }
 
     private void OnClickStartButton()
@@ -22,5 +24,10 @@ public class MainSceneUIHandler : MonoBehaviour
     private void OnClickQuitButton()
     {
         GameManager.Instance.QuitGame();
+    }
+
+    private void OnClickSettingButton()
+    {
+        PopupManager.Instance?.OpenPopup(EPopupType.GAMESETTING);
     }
 }

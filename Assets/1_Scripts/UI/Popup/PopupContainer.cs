@@ -7,38 +7,27 @@ using UnityEngine;
 /// </summary>
 public class PopupContainer : MonoBehaviour
 {
-    [SerializeField] private List<PopupUI> popup;
+    Dictionary<EPopupType, PopupUI> popupUI = new Dictionary<EPopupType, PopupUI> ();
 
     private void Start()
     {
+        var popups = GetComponentsInChildren<PopupUI>(true);
+
+        foreach (var popup in popups)
+        {
+            if(popupUI.TryAdd(popup.PopupType, popup))
+            {
+                popup.gameObject.SetActive(false);
+            }
+        }
+
         PopupManager.Instance?.SetPopupContainer(this);
-        CloseAllPopup();
     }
 
     public PopupUI GetPopup(EPopupType type)
     {
-        PopupUI result = null;
+        popupUI.TryGetValue(type, out var popup);
 
-        foreach(var popupUI in popup)
-        {
-            if(popupUI.PopupType == type)
-            {
-                result = popupUI;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    private void CloseAllPopup()
-    {
-        if(popup.Count > 0)
-        {
-            foreach(var popupUI in popup)
-            {
-                popupUI.gameObject.SetActive(false);
-            }
-        }
+        return popup;
     }
 }

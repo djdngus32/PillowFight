@@ -42,7 +42,7 @@ public class FightGameManager : NetworkBehaviour
             else
             {
                 GameManager.Instance.PauseGame();
-            }            
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
