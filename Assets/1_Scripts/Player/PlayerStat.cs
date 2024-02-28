@@ -61,4 +61,18 @@ public class PlayerStat : NetworkBehaviour
 
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
     }
+
+    public bool TryRecoveryHp(float recoveryValue)
+    {
+        if(CurrentHP <= 0f)
+            return false;
+        if(CurrentHP >= maxHP)
+            return false;
+
+        CurrentHP = Mathf.Min(CurrentHP + recoveryValue, maxHP);
+
+        PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
+        return true;
+    }
+
 }
