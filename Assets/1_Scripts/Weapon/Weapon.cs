@@ -14,16 +14,19 @@ public class Weapon : NetworkBehaviour
     public float AttackSpeed => attackSpeed;
     public float AttackCooldownTime => 1 / attackSpeed;
 
+    public float DamageBoxDistance => damageBoxDistance;
+    public Vector3 DamageBoxCenter { get; private set; }
+    public Vector3 DamageBoxSize => new Vector3(damageBoxSize, damageBoxSize, damageBoxDistance);
+
     public void Attack(Vector3 attackPosition, Quaternion attackRotation)
     {
         float halfBoxSize = damageBoxSize * 0.5f;
         float halfBoxDistance = damageBoxDistance * 0.5f;
 
-        Vector3 center = attackPosition + (attackRotation * Vector3.forward * halfBoxDistance);
-        Vector3 halfExtents = new Vector3(halfBoxSize, halfBoxSize, halfBoxDistance);
+        DamageBoxCenter = attackPosition + (attackRotation * Vector3.forward * halfBoxDistance);
         Collider[] colliders = new Collider[8];
 
-        int collisions = Runner.GetPhysicsScene().OverlapBox(center, halfExtents, colliders, attackRotation, hitLayerMask);
+        int collisions = Runner.GetPhysicsScene().OverlapBox(DamageBoxCenter, DamageBoxSize * 0.5f, colliders, attackRotation, hitLayerMask);
         if(collisions > 0)
         {
             for(int i = 0; i < collisions; i++)

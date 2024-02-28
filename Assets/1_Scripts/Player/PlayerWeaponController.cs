@@ -56,4 +56,16 @@ public class PlayerWeaponController : NetworkBehaviour
 
         AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, CurrentWeapon.AttackCooldownTime);
     }
+
+    private void OnDrawGizmos()
+    {
+        if (attackTransform == null)
+            return;
+        if (CurrentWeapon == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.matrix = Matrix4x4.TRS(attackTransform.position, attackTransform.rotation, attackTransform.localScale);
+        Gizmos.DrawWireCube(new Vector3(0f,0f,CurrentWeapon.DamageBoxDistance * 0.5f), CurrentWeapon.DamageBoxSize);
+    }
 }
