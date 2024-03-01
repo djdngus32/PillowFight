@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameUIHandler : MonoBehaviour
 {
+    [Header("Component")]
+    [SerializeField] private KillLogUIHandler killLogUI;
+
     [Header("Player")]
     [SerializeField] private TMP_Text playerHPText;
 
@@ -18,6 +20,11 @@ public class GameUIHandler : MonoBehaviour
     private void OnDisable()
     {
         PlayerManager.Instance.onChangedHP -= OnChangedPlayerHP;
+    }
+
+    public void AddKillLog(string killerPlayerNickname, string killedPlayerNickname)
+    {
+        killLogUI.ShowKillLog(killerPlayerNickname, killedPlayerNickname);
     }
 
     private void OnChangedPlayerHP(int playerHP)

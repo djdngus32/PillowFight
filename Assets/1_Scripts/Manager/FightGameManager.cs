@@ -15,6 +15,7 @@ public class FightGameManager : NetworkBehaviour
 
     private bool isSentPlayerNickname = false;
     private List<Transform> spawnPointList = new List<Transform>();
+    private GameUIHandler gameUI;
 
     [Networked, Capacity(16)]
     public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
@@ -25,6 +26,11 @@ public class FightGameManager : NetworkBehaviour
         {
             Instance = this;
         }
+    }
+
+    private void Start()
+    {
+        gameUI = FindObjectOfType<GameUIHandler>();
     }
 
     private void Update()
@@ -122,23 +128,34 @@ public class FightGameManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_OnKilledPlayer(PlayerRef killerPlayerRef, PlayerRef killedPlayerRef)
     {
-        //플레이어 데이터에 접근 가능한 것은 매니저 클래스의 권한이 있는 사람 == 방장 뿐이여야 한다.
-        if(Object.HasStateAuthority)
+        string killerPlayerNickname = string.Empty;
+        string killedPlayerNickname = string.Empty;
+
+        if (PlayerData.TryGet(killerPlayerRef, out PlayerData killerPlayerData))
         {
-            if(PlayerData.TryGet(killerPlayerRef, out PlayerData killerPlayerData))
+            killerPlayerNickname = killerPlayerData.Nickname;
+            if (Object.HasStateAuthority)
             {
                 killerPlayerData.KillCount++;
                 PlayerData.Set(killerPlayerRef, killerPlayerData);
             }
+        }
 
-            if(PlayerData.TryGet(killedPlayerRef, out PlayerData killedPlayerData))
+        if (PlayerData.TryGet(killedPlayerRef, out PlayerData killedPlayerData))
+        {
+            killedPlayerNickname = killedPlayerData.Nickname;
+            if (Object.HasStateAuthority)
             {
                 killedPlayerData.DeathCount++;
-                PlayerData.Set(killedPlayerRef, killedPlayerData);                
+                PlayerData.Set(killedPlayerRef, killedPlayerData);
             }
         }
-        
+
         //UI에 킬로그 띄우기
+        if(gameUI != null)
+        {
+            gameUI.AddKillLog(killerPlayerNickname, killedPlayerNickname);
+        }
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
