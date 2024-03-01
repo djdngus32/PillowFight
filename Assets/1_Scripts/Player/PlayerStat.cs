@@ -104,8 +104,12 @@ public class PlayerStat : NetworkBehaviour
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
     }
 
-    public void ActivateBuff(EBuffType buffType, float buffDurationTime)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_ActivateBuff(EBuffType buffType, float buffDurationTime)
     {
+        if (HasStateAuthority == false)
+            return;
+
         switch (buffType)
         {
             case EBuffType.DAMAGE:

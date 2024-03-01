@@ -19,10 +19,6 @@ public class FightGameManager : NetworkBehaviour
     [Networked, Capacity(16)]
     public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
 
-    private UnityEvent<List<PlayerData>> OnPlayerDataChanged = new UnityEvent<List<PlayerData>>();
-
-    private List<PlayerData> PlayerDataOrderByKillCount => PlayerData.Select(pair => pair.Value).OrderByDescending(data => data.KillCount).ToList();
-
     private void Awake()
     {
         if(Instance == null)
@@ -58,12 +54,6 @@ public class FightGameManager : NetworkBehaviour
 
     public override void Spawned()
     {
-        var scoreBoardPopup = PopupManager.Instance.GetPopup(EPopupType.SCOREBOARD) as ScoreBoardPopupUI;
-        if (scoreBoardPopup != null)
-        {
-            OnPlayerDataChanged.AddListener(scoreBoardPopup.UpdateScoreBoard);
-        }
-
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -117,7 +107,6 @@ public class FightGameManager : NetworkBehaviour
                 playerData.OwnerPlayerPrefs = player;
 
                 PlayerData.Set(player, playerData);
-                RPC_OnChangedPlayerData();
             }
         }
 
@@ -126,7 +115,6 @@ public class FightGameManager : NetworkBehaviour
             if(!tempPlayers.Contains(pair.Key))
             {
                 PlayerData.Remove(pair.Key);
-                RPC_OnChangedPlayerData();
             }
         }
     }
@@ -148,17 +136,9 @@ public class FightGameManager : NetworkBehaviour
                 killedPlayerData.DeathCount++;
                 PlayerData.Set(killedPlayerRef, killedPlayerData);                
             }
-
-            RPC_OnChangedPlayerData();
         }
         
         //UI에 킬로그 띄우기
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_OnChangedPlayerData()
-    {
-        OnPlayerDataChanged.Invoke(PlayerDataOrderByKillCount);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
@@ -167,8 +147,6 @@ public class FightGameManager : NetworkBehaviour
         var playerData = PlayerData.Get(sendPlayer);
         playerData.Nickname = nickname;
         PlayerData.Set(sendPlayer, playerData);
-
-        RPC_OnChangedPlayerData();
     }
 
     public Transform GetSpawnPoint()

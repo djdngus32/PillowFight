@@ -36,7 +36,7 @@ public class BuffPackSpawner : NetworkBehaviour
             var stat = colliders[i].GetComponentInParent<PlayerStat>();
             if (stat != null)
             {
-                stat.ActivateBuff(buffType, buffDurationTime);
+                stat.RPC_ActivateBuff(buffType, buffDurationTime);
                 CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldownTime);
                 break;
             }
