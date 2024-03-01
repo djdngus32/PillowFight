@@ -164,7 +164,7 @@ public class PlayerController : NetworkBehaviour
 
         if(inputData.IsPressed(PlayerInputData.BUTTON_ATTACK))
         {
-            float damageMultiplier = stat.IsActiveMoveSpeedBuff ? damageBuffMultiplier : 1f;
+            float damageMultiplier = stat.IsActiveDamageBuff ? damageBuffMultiplier : 1f;
             weaponController.Attack(damageMultiplier);
         }
     }

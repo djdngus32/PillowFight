@@ -7,6 +7,8 @@ public class PlayerStat : NetworkBehaviour
 {
     [SerializeField] private float maxHP = 100f;
     [SerializeField] private float invincibilityDurationAfterSpawn = 2f;
+    [SerializeField] private GameObject damageBuffEffect;
+    [SerializeField] private GameObject moveSpeedBuffEffect;
 
     public int localDamagedCount;
 
@@ -35,14 +37,17 @@ public class PlayerStat : NetworkBehaviour
         localDamagedCount = DamagedCount;
     }
 
-    public override void FixedUpdateNetwork()
-    {
-        
-    }
-
     public override void Render()
     {
-        
+        if(damageBuffEffect.activeSelf != IsActiveDamageBuff)
+        {
+            damageBuffEffect.SetActive(IsActiveDamageBuff);
+        }
+
+        if(moveSpeedBuffEffect.activeSelf != IsActiveMoveSpeedBuff)
+        {
+            moveSpeedBuffEffect.SetActive(IsActiveMoveSpeedBuff);
+        }
     }
 
     [Rpc(RpcSources.All , RpcTargets.StateAuthority)]
@@ -111,5 +116,4 @@ public class PlayerStat : NetworkBehaviour
                 break;
         }
     }
-
 }

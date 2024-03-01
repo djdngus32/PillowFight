@@ -9785,7 +9785,7 @@ GameObject:
   - component: {fileID: 629411938218398726}
   - component: {fileID: 5214370613870256281}
   m_Layer: 0
-  m_Name: HitEffect
+  m_Name: Hit Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
