@@ -11,11 +11,15 @@ public class PlayerStat : NetworkBehaviour
     public int localDamagedCount;
 
     public bool IsAlive => CurrentHP > 0f;
-    public bool IsInvincibility => invincibilityTimer.ExpiredOrNotRunning(Runner) == false;
+    public bool IsInvincibility => InvincibilityTimer.ExpiredOrNotRunning(Runner) == false;
+    public bool IsActiveDamageBuff => DamageBuffTimer.ExpiredOrNotRunning(Runner) == false;
+    public bool IsActiveMoveSpeedBuff => MoveSpeedBuffTimer.ExpiredOrNotRunning(Runner) == false;
 
     [Networked] public int DamagedCount { get; private set; }
     [Networked] public float CurrentHP { get; private set; }
-    [Networked] private TickTimer invincibilityTimer { get; set; }
+    [Networked] private TickTimer InvincibilityTimer { get; set; }
+    [Networked] private TickTimer DamageBuffTimer { get; set; }
+    [Networked] private TickTimer MoveSpeedBuffTimer { get; set; }
 
     public override void Spawned()
     {
@@ -23,12 +27,22 @@ public class PlayerStat : NetworkBehaviour
         {
             CurrentHP = maxHP;
 
-            invincibilityTimer = TickTimer.CreateFromSeconds(Runner, invincibilityDurationAfterSpawn);
+            InvincibilityTimer = TickTimer.CreateFromSeconds(Runner, invincibilityDurationAfterSpawn);
 
             PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
         }
 
         localDamagedCount = DamagedCount;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        
+    }
+
+    public override void Render()
+    {
+        
     }
 
     [Rpc(RpcSources.All , RpcTargets.StateAuthority)]
@@ -83,6 +97,19 @@ public class PlayerStat : NetworkBehaviour
         CurrentHP = Mathf.Min(CurrentHP + recoveryValue, maxHP);
 
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
+    }
+
+    public void ActivateBuff(EBuffType buffType, float buffDurationTime)
+    {
+        switch (buffType)
+        {
+            case EBuffType.DAMAGE:
+                DamageBuffTimer = TickTimer.CreateFromSeconds(Runner, buffDurationTime);
+                break;
+            case EBuffType.MOVESPEED:
+                MoveSpeedBuffTimer = TickTimer.CreateFromSeconds(Runner, buffDurationTime);
+                break;
+        }
     }
 
 }

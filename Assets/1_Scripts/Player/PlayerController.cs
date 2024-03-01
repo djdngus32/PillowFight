@@ -26,6 +26,10 @@ public class PlayerController : NetworkBehaviour
     [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
     private float clampLookPitchAngle = 70f;
 
+    [Header("Buff MultiPlier")]
+    [SerializeField] private float damageBuffMultiplier = 2f;
+    [SerializeField] private float moveSpeedBuffMultiplier = 1.2f;
+
     [Header("Effects")]
     [SerializeField] private GameObject hitEffectPrefab;
 
@@ -149,7 +153,9 @@ public class PlayerController : NetworkBehaviour
             jumpImpulse = jumpForce;
         }
 
-        MovePlayer(inputMoveDirection * moveSpeed, jumpImpulse);
+        float moveSpeedMultiplier = stat.IsActiveMoveSpeedBuff ? moveSpeedBuffMultiplier : 1f;
+
+        MovePlayer(inputMoveDirection * moveSpeed * moveSpeedMultiplier, jumpImpulse);
 
         if(KCC.HasJumped)
         {
@@ -158,7 +164,8 @@ public class PlayerController : NetworkBehaviour
 
         if(inputData.IsPressed(PlayerInputData.BUTTON_ATTACK))
         {
-            weaponController.Attack();
+            float damageMultiplier = stat.IsActiveMoveSpeedBuff ? damageBuffMultiplier : 1f;
+            weaponController.Attack(damageMultiplier);
         }
     }
 

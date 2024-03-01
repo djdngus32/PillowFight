@@ -18,7 +18,7 @@ public class Weapon : NetworkBehaviour
     public Vector3 DamageBoxCenter { get; private set; }
     public Vector3 DamageBoxSize => new Vector3(damageBoxSize, damageBoxSize, damageBoxDistance);
 
-    public void Attack(Vector3 attackPosition, Quaternion attackRotation)
+    public void Attack(Vector3 attackPosition, Quaternion attackRotation,float damageMultiplier)
     {
         float halfBoxSize = damageBoxSize * 0.5f;
         float halfBoxDistance = damageBoxDistance * 0.5f;
@@ -36,7 +36,7 @@ public class Weapon : NetworkBehaviour
                 if (enemyStat == null || enemyStat.HasStateAuthority == Object.HasStateAuthority || enemyStat.IsAlive == false)
                     continue;
 
-                enemyStat.RPC_ApplyDamage(Object.StateAuthority, damage);
+                enemyStat.RPC_ApplyDamage(Object.StateAuthority, damage * damageMultiplier);
             }
         }
     }

@@ -44,14 +44,14 @@ public class PlayerWeaponController : NetworkBehaviour
         visibleAttackCount = AttackCount;
     }
 
-    public void Attack()
+    public void Attack(float damageMultiplier)
     {
         if (CurrentWeapon == null)
             return;
         if (AttackCooldownTimer.ExpiredOrNotRunning(Runner) == false)
             return;
 
-        CurrentWeapon.Attack(attackTransform.position, attackTransform.rotation);
+        CurrentWeapon.Attack(attackTransform.position, attackTransform.rotation, damageMultiplier);
         AttackCount++;
 
         AttackCooldownTimer = TickTimer.CreateFromSeconds(Runner, CurrentWeapon.AttackCooldownTime);

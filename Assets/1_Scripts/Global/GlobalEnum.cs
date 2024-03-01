@@ -6,3 +6,8 @@ public enum EPopupType
     GAMESETTING,
 }
 
+public enum EBuffType
+{
+    DAMAGE,
+    MOVESPEED
+}
