@@ -26,6 +26,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField, Range(50f, 85f), Tooltip("카메라의 상하각도를 제한하기 위한 변수")]
     private float clampLookPitchAngle = 70f;
 
+    [Header("Effects")]
+    [SerializeField] private GameObject hitEffectPrefab;
+
     // 애니메이션 ID
     //Parameter Hash
     private int animIDMoveSpeed;
@@ -108,6 +111,7 @@ public class PlayerController : NetworkBehaviour
         if (stat.DamagedCount > stat.localDamagedCount)
         {
             animator.SetTrigger(animIDTakeDamage);
+            PlayHitEffect();
             stat.localDamagedCount++;
         }
     }
@@ -193,16 +197,14 @@ public class PlayerController : NetworkBehaviour
         return transform.InverseTransformVector(velocity);
     }
 
-    /// <summary>
-    /// 해당 애니메이션이 재생중인지 확인하는 함수
-    /// </summary>
-    /// <param name="animationStateID">알고싶은 애니메이션 State의 이름을 Animator.StringToHash로 변환한 값</param>
-    /// <returns>해당 애니메이션이 재생중이다면 true를 반환</returns>
-    private bool IsPlayAnimation(int animationStateID)
+    private void PlayHitEffect()
     {
-        AnimatorStateInfo currentStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        AnimatorStateInfo nextStateInfo = animator.GetNextAnimatorStateInfo(0);
+        if (hitEffectPrefab != null)
+        {
+            var hitPosition = transform.position + Vector3.up;
+            var hitRotation = Quaternion.identity;
 
-        return currentStateInfo.shortNameHash == animationStateID || nextStateInfo.shortNameHash == animationStateID;
+            Instantiate(hitEffectPrefab, hitPosition, hitRotation);
+        }
     }
 }

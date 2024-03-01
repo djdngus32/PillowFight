@@ -61,6 +61,8 @@ public class PlayerWeaponController : NetworkBehaviour
     {
         if (attackTransform == null)
             return;
+        if (Runner == null)
+            return;
         if (CurrentWeapon == null)
             return;
 

@@ -69,10 +69,20 @@ public class PlayerStat : NetworkBehaviour
         if(CurrentHP >= maxHP)
             return false;
 
+        RPC_RecoveryHp(recoveryValue);
+
+        return true;
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RecoveryHp(float recoveryValue)
+    {
+        if (HasStateAuthority == false)
+            return;
+
         CurrentHP = Mathf.Min(CurrentHP + recoveryValue, maxHP);
 
         PlayerManager.Instance.onChangedHP?.Invoke((int)CurrentHP);
-        return true;
     }
 
 }

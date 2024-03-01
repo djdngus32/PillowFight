@@ -2252,6 +2252,7 @@ MonoBehaviour:
   airAcceleration: 25
   airDeceleration: 1.3
   clampLookPitchAngle: 70
+  hitEffectPrefab: {fileID: 1810745013295489724, guid: a8deb0aa0600e1249b2975a9b1466926, type: 3}
   _MoveVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1853812093779450591
 MonoBehaviour:
