@@ -33,6 +33,8 @@ public class PlayerController : NetworkBehaviour
     [Header("Effects")]
     [SerializeField] private GameObject hitEffectPrefab;
 
+    private NicknameTagItemUIHandler nicknameTag;
+
     // 애니메이션 ID
     //Parameter Hash
     private int animIDMoveSpeed;
@@ -49,6 +51,8 @@ public class PlayerController : NetworkBehaviour
 
     private readonly float GRAVITY = -9.81f;
 
+    [Networked] private string Nickname { get; set; }
+
     public override void Spawned()
     {
         if (Object.HasInputAuthority == true)
@@ -58,10 +62,25 @@ public class PlayerController : NetworkBehaviour
             {
                 followCamera.SetFollowTarget(cameraFollowTarget);
             }
+            Nickname = GameDataManager.Instance.LoadDataToLocal(GlobalString.DATA_KEY_PLAYER_NICKNAME, "");
             PlayerManager.Instance.Controller = this;
         }
 
         InitializeAnimator();
+
+        nicknameTag = NicknameTagUIHandler.Instance.GetNicknameTag();
+        if (nicknameTag != null)
+        {
+            nicknameTag.SetUp(Nickname, this.transform);
+        }
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        if(nicknameTag != null)
+        {
+            NicknameTagUIHandler.Instance.ReturnNicknameTag(nicknameTag);
+        }
     }
 
     public override void FixedUpdateNetwork()
