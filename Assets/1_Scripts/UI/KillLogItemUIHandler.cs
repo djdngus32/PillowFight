@@ -62,7 +62,5 @@ public class KillLogItemUIHandler : MonoBehaviour
         fadeOutCoroutine = null;
         Hide();
         yield return null;
-    }
-
-    
+    }    
 }

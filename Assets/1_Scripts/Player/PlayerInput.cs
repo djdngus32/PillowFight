@@ -31,26 +31,6 @@ public class PlayerInput : NetworkBehaviour, INetworkRunnerCallbacks
     {
         PlayerInputData input = default;
 
-        //if (Input.GetKey(KeyCode.W))
-        //{
-        //    input.buttons |= PlayerInputData.BUTTON_FORWARD;
-        //}
-
-        //if (Input.GetKey(KeyCode.S))
-        //{
-        //    input.buttons |= PlayerInputData.BUTTON_BACKWARD;
-        //}
-
-        //if (Input.GetKey(KeyCode.A))
-        //{
-        //    input.buttons |= PlayerInputData.BUTTON_LEFT;
-        //}
-
-        //if (Input.GetKey(KeyCode.D))
-        //{
-        //    input.buttons |= PlayerInputData.BUTTON_RIGHT;
-        //}
-
         input.MoveDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
         if (Input.GetKey(KeyCode.Space))

@@ -23,7 +23,7 @@ public class MainSceneUIHandler : MonoBehaviour
 
     private void OnClickQuitButton()
     {
-        GameManager.Instance.QuitGame();
+        GameManager.Instance?.QuitGame();
     }
 
     private void OnClickSettingButton()

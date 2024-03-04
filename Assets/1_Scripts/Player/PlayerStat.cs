@@ -68,7 +68,7 @@ public class PlayerStat : NetworkBehaviour
         {
             CurrentHP = 0f;
 
-            //磷澜 贸府 せせせせ
+            //磷澜 贸府
             Debug.Log("Dead!");
             StartCoroutine(PlayerManager.Instance.CoRespawnPlayer(5f));
             FightGameManager.Instance.RPC_OnKilledPlayer(instigator, Object.StateAuthority);

@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Fusion;
-using Unity.VisualScripting;
-using Fusion.Sockets;
-using System;
 
-public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
+//게임 시작시 딱 한번 서버에 연결을 담당하는 클래스
+public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager Instance { get; private set; }
 
@@ -45,16 +43,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     private IEnumerator CoConnectFusionServer()
     {
-        //var op = SceneManager.LoadSceneAsync(SCENE_NAME_FIELD, LoadSceneMode.Single);
-
-        //while(op.isDone == false)
-        //{
-        //    yield return null;
-        //}
-
+        //세션과의 연결을 직접적으로 담당할 Runner 객체를 생성.
         runner = Instantiate(networkRunnerPrefab);
         runner.name = networkRunnerPrefab.name;
 
+        //생성, 진입할 세션의 정보를 할당
         StartGameArgs startGameArgs = new StartGameArgs();
 
         startGameArgs.GameMode = GameMode.Shared;
@@ -82,104 +75,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         yield return new WaitForSeconds(1);
 
-        //yield return new WaitUntil(() => runner.IsConnectedToServer == true);
         PlayerManager.Instance.SetRunner(runner);
 
         yield return null;
-    }
-
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnConnectedToServer(NetworkRunner runner)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnSceneLoadStart(NetworkRunner runner)
-    {
-        throw new NotImplementedException();
     }
 }

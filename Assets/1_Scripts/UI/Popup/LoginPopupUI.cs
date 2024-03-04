@@ -25,7 +25,7 @@ public class LoginPopupUI : PopupUI
 
         GameDataManager.Instance.SaveDataToLocal(GlobalString.DATA_KEY_PLAYER_NICKNAME, nickNameInputField.text);
 
-        gameObject.SetActive(false);
+        Close();
 
         NetworkManager.Instance.JoinOrCreateSession();
     }

@@ -42,37 +42,15 @@ public class PopupManager : MonoBehaviour
 
     public void OpenPopup(EPopupType type)
     {
-        if(popupContainer != null)
-        {
-            PopupUI popup = popupContainer.GetPopup(type);
-            if (popup == null)
-            {
-                Debug.LogError($"PopupManager::This Container does not have Type[{type}] Popup");
-                return;
-            }
-            popup.Open();
-        }
-        else
-        {
-            Debug.LogError("PopupManager::Container is Null!!");
-        }
+        var popup = GetPopup(type);
+
+        popup?.Open();
     }
 
     public void ClosePopup(EPopupType type)
     {
-        if (popupContainer != null)
-        {
-            PopupUI popup = popupContainer.GetPopup(type);
-            if (popup == null)
-            {
-                Debug.LogError($"PopupManager::This Container does not have Type[{type}] Popup");
-                return;
-            }
-            popup.Close();
-        }
-        else
-        {
-            Debug.LogError("PopupManager::Container is Null!!");
-        }
+        var popup = GetPopup(type);
+
+        popup?.Close();
     }
 }

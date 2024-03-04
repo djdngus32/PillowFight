@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Linq;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using UnityEngine.EventSystems;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -95,8 +94,6 @@ public class PlayerController : NetworkBehaviour
         if (IsProxy)
             return;
 
-        //UpdateInput();
-
         //죽었다면 아무것도 못한다.
         if (stat != null && stat.IsAlive == false)
             return;
@@ -125,7 +122,6 @@ public class PlayerController : NetworkBehaviour
 
         if (visibleJumpCount < JumpCount)
         {
-            //트리거로 변경할 것
             animator.SetTrigger(animIDJump);
         }
         visibleJumpCount = JumpCount;

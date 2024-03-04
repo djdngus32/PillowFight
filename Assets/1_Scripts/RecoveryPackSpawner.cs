@@ -30,15 +30,12 @@ public class RecoveryPackSpawner : NetworkBehaviour
         if (IsActive == false)
             return;
 
-        // Get all colliders around pickup within Radius.
         int collisions = Runner.GetPhysicsScene().OverlapSphere(transform.position + Vector3.up, triggerRadius, colliders, layerMask, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < collisions; i++)
         {
-            // Check for Health component on collider game object or any parent.
             var stat = colliders[i].GetComponentInParent<PlayerStat>();
             if (stat != null && stat.TryRecoveryHp(recoveryValue))
             {
-                // Pickup was successful, activating timer.
                 CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldownTime);
                 break;
             }
